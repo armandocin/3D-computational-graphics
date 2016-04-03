@@ -8,11 +8,6 @@ title: Progetto di Grafica Computazionale
 Breve Storia
 ==============================================
 
-*Armando Cincotti*\
-**Taliesin West**
-
-* * * * *
-
 Storia
 ------------
 
@@ -24,20 +19,16 @@ Storia
 
 Anche tutti i mobili e le decorazioni sono state progettate da Wright, e la maggior parte di essi sono state costruite dai suoi allievi.
 
-\includegraphics[width=4in]{/home/armandocin/Immagini/forniture1.jpg}
+\includegraphics[width=100px,height=110px]{/home/armandocin/Immagini/forniture1.jpg}
 
 Nel 2008, Taliesin West è stato proclamato partimonio mondiale.
 
-Storia
+Materiali e Struttura
 ---------
+Le pareti sono costituite da rocce e legno locale, mentre come legante egli usò il calcestruzzo. La luce naturale svolge una parte importante nella progettazione. Infatti nella sala di progettazione, Wright ha usato come tetto una tela traslucida (poi sostituita dalla plastica a causa dell'usura intensa del sole dell'Arizona). Nella sala ristorazione, invece, rivolta a sud, Wright non previde pareti in muratura, ma usò il vetro per far entrare il sole e dare luce naturale all'ambiente interno. A Wright piaceva la luce naturale e, in questo modo, l'ambiente costruito dove si ritrovava con i suoi allievi, mantenne il contatto con la natura circostante.
 
-<img src="/home/armandocin/Immagini/forniture2.jpg" width="300" height="73"/>
-
-Storia
----------
-      this is a *code* **block**
-
-#### Sottoparagrafo
+Planimetrie
+------------
 
 in questo paragrafo devo fare la prova degli elenchi.
 
@@ -55,7 +46,7 @@ in questo paragrafo devo fare la prova degli elenchi.
 
 Immagine
 --------
-\includegraphics[width=0.2\linewidth]{/home/armandocin/Immagini/tal.jpeg}
+\includegraphics[width=20px,height=20px]{/home/armandocin/Immagini/tal.jpeg}
 
 Immagine2
 ----------
