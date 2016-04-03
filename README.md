@@ -1,4 +1,4 @@
-author: Armando Cincotti
+% Armando Cincotti
 
 TALIESIN WEST
 =============
