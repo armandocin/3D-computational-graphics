@@ -1,4 +1,8 @@
-% Armando Cincotti
+
+Progetto di Grafica Computazionale
+================
 
 TALIESIN WEST
-=============
+-------------
+
+
