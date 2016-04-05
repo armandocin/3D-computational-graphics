@@ -47,6 +47,3 @@ Planimetrie
 Planimetrie
 ------------
 \includegraphics[width=\linewidth]{/home/armandocin/Immagini/Planimetria2.jpg}
-
-
-
