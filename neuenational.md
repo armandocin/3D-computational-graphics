@@ -89,13 +89,13 @@ Piano Terra
 ----
 \framesubtitle{Planimetria}
 
-\includegraphics[width=\linewidth]{/home/armandocin/Immagini/"Neue Nationalgalerie"/pianta_pt.jpg}
+\includegraphics[width=0.7\linewidth]{/home/armandocin/Immagini/"Neue Nationalgalerie"/pianta_pt.jpg}
 
 Piano Seminterrato
 ----
 \framesubtitle{Planimetria}
 
-\includegraphics[width=\linewidth]{/home/armandocin/Immagini/"Neue Nationalgalerie"/pianta_pi.jpg}
+\includegraphics[width=0.67\linewidth]{/home/armandocin/Immagini/"Neue Nationalgalerie"/pianta_pi.jpg}
 
 Sezione
 ----
@@ -105,7 +105,7 @@ Dimensioni
 -----
 ||BASE(mt)|ALTEZZA(mt)|
 | --- |:----:|:------:|
-|tetto|65x65|1.80|
+|Tetto|65x65|1.80|
 |Piano Terra|50.40x50.40|8.40|
 |Piano Semint.|110x105|4|
 
