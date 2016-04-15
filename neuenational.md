@@ -45,9 +45,9 @@ L'edificio è costruito interamente in:
 
 Architettura
 -----
-La caratteristica principale è, senza dubbio, l'atrio espositivo e la piastra di acciaio nero, spessa 1,8 m e di 65 m quadrati che forma il tetto, poggiata su due pilastri di acciaio cruciformi, che lo sorreggono dai lati, lasciando gli angoli liberi. Questo da un senso di fluttuazione in aria del tetto, dal momento che le pareti sono tutte in vetro.
+La caratteristica principale è, senza dubbio, l'atrio espositivo e la **piastra di acciaio** nero, spessa 1,8 m e di 65 m per lato, che forma il tetto, poggiata su otto **pilastri di acciaio cruciformi**. Essi sono disposti due per lato, in modo da lasciare gli angoli liberi. Questa struttura da l'impressione che il tetto galleggi nel vuoto, grazie anche alle pareti completamente in vetro. Il tetto è formato da un telaio a griglia di snelle travi in acciaio a doppia T.
 
-\includegraphics[height=0.5\linewidth]{/home/armandocin/Immagini/"Neue Nationalgalerie"/pt_pilas1.jpg}
+\includegraphics[height=0.4\linewidth]{/home/armandocin/Immagini/"Neue Nationalgalerie"/pt_pilas1.jpg}
 
 Architettura
 --------
@@ -56,13 +56,23 @@ Architettura
 \includegraphics[width=160px]{/home/armandocin/Immagini/"Neue Nationalgalerie"/03.jpg}  
 \centering \includegraphics[width=170px]{/home/armandocin/Immagini/"Neue Nationalgalerie"/index.jpeg}
 
+Architettura
+------
+\framesubtitle{Dimensioni}
+
++ Ai due lati dell'ampio podio, ci sono due scalinate esterne che conducono al basamento in pietra di 110x105mt, mentre la scalinata in facciata conduce all’ingresso principale.
+
++ Per entrare al museo è necessario passare dalle scalinate ed attraversare quindi il piano terra, per poi scendere dall'interno al piano seminterrato dove sono tenute le mostre permanenti.
+
++ La sala vetrata situata sopra il podio è una sala quadrata di 50.40x50.40 mt, alta 8.40 mt, la cui pianta è organizzata secondo un reticolo modulare di 3.6x3.6 mt.
+
 Interni
 ------
 ###Piano Terra
 Al piano terra, grazie alle pareti in vetro e grazie alla continuità della pavimentazione esterna con quella interna, lo spazio urbano esterno diventa un tutt’uno con la mostra espositiva ambientata all’interno del museo.
 
 ###Piano Interrato
-Il piano interrato (di circa 10.000,00 mq.) caratterizzato da uno spazio prospiciente ad un giardino allestito con delle sculture, è uno spazio caratterizzato da un’ampia vetrata che permettendo l’ingresso della luce naturale, conferisce all’ambiente una straordinaria intensità spaziale. A tale piano trovano inoltre sede gli uffici del museo.
+Il piano seminterrato (di circa 10.000 mq. e alto 4 mt) si affaccia sul retro ad un giardino allestito con delle sculture attraverso un’ampia vetrata che, permettendo l’ingresso della luce naturale, conferisce all’ambiente una straordinaria intensità spaziale. A tale piano trovano inoltre sede gli uffici del museo.  Questo piano, in cemento armato, è strutturato secondo una maglia quadrata con pilastri collocati a **interassi di 7.20 mt**, pilastri che, nel settore verso il cortile, risultano arretrati dal filo della parete in modo da consentire la presenza della vetrata. 
 
 Interni
 -----
@@ -73,6 +83,41 @@ Interni
 ------
 \includegraphics[height=0.35\linewidth]{/home/armandocin/Immagini/"Neue Nationalgalerie"/pt_inside1.jpg}
 \hfill
-\includegraphics[height=0.3\linewidth]{/home/armandocin/Immagini/"Neue Nationalgalerie"/pt_inside2.jpg}   
+\includegraphics[height=0.3\linewidth]{/home/armandocin/Immagini/"Neue Nationalgalerie"/pt_inside2.jpg}
 
+Piano Terra
+----
+\framesubtitle{Planimetria}
 
+\includegraphics[width=\linewidth]{/home/armandocin/Immagini/"Neue Nationalgalerie"/pianta_pt.jpg}
+
+Piano Seminterrato
+----
+\framesubtitle{Planimetria}
+
+\includegraphics[width=\linewidth]{/home/armandocin/Immagini/"Neue Nationalgalerie"/pianta_pi.jpg}
+
+Sezione
+----
+\includegraphics[width=\linewidth]{/home/armandocin/Immagini/"Neue Nationalgalerie"/sez1.jpg}
+
+Dimensioni
+-----
+||BASE(mt)|ALTEZZA(mt)|
+| --- |:----:|:------:|
+|tetto|65x65|1.80|
+|Piano Terra|50.40x50.40|8.40|
+|Piano Semint.|110x105|4|
+
+Riferimenti
+------
+
++ https://it.wikipedia.org/wiki/Neue_Nationalgalerie
+
++ http://divisare.com/projects/297030-rory-gardiner-ludwig-mies-van-der-rohe-fabio-candido-neue-nationalgalerie
+
++ http://www.ilmitte.com/neue-nationalgalerie-berlino/
+
++ http://www.capitalieuropee.altervista.org/2/211.html
+
++ https://archiladymenabo.wordpress.com/2008/07/13/neue-nationalgalerie-di-mies-van-der-rohe-a-berlino/
