@@ -10,11 +10,15 @@ VIEW(pianoterra)
 V,EV = lines2lar(lines_pt) ##creo Vertici e Spigoli del piano terra
 VV = AA(LIST)(range(len(V)))
 submodel = STRUCT(MKPOLS((V,EV)))
-VIEW(larModelNumbering(1,1,1)(V,[VV,EV],submodel,0.07))
+##VIEW(larModelNumbering(1,1,1)(V,[VV,EV],submodel,0.07))
 
 pianoterra1D=V,EV
 
 """ Qua ci devo mette la trasform1azione di scala """
+assert EV[42] == (8,9) ##spigolo di un muro del pianoterra. 8 e 9 sono i vertici
+assert V[8],V[9] == ([0.118,0.1705] , [0.8801,0.1705])
+## lo spigolo 42 è lungo 0.8801-0.118 = 0.7621 e deve diventare di 50.4. Il fattore di scala è quindi 50.4/0.7621
+V = (mat(V) * (50.4/0.7621)).tolist()
 
 """ Divido i muri di altezza diversa """
 stairsEdges = [48,21,142,45,85,43,75,55,24,37,59,118,19,83,12,41,97,29] ##spigoli elle ringhiere delle scale
@@ -35,11 +39,11 @@ walls = COLOR(CYAN)(OFFSET([.0025,.0025])(wallsHPCs))
 ##VIEW(STRUCT([ stairs,panels,walls,ducts ]))
 
 """Estrusione delle mura piano terra"""
-stairsExtr = PROD([ STRUCT([stairs]), INTERVALS(0.009)(1) ])
-ductsExtr = PROD([ STRUCT([ducts]), INTERVALS(0.14)(1) ])
-panelsExtr = PROD([ STRUCT([panels]), INTERVALS(0.05)(1) ]) ###mettere altezza reale pannelli
-wallsExtr = PROD([ STRUCT([walls, ducts]), INTERVALS(0.14)(1) ])
-VIEW(STRUCT([panelsExtr, wallsExtr, ductsExtr, stairsExtr]))
+stairsExtr = PROD([ STRUCT([stairs]), INTERVALS(0.9)(1) ])
+ductsExtr = PROD([ STRUCT([ducts]), INTERVALS(8.4)(1) ])
+panelsExtr = PROD([ STRUCT([panels]), INTERVALS(2.5)(1) ]) ###mettere altezza reale pannelli
+wallsExtr = PROD([ STRUCT([walls, ducts]), INTERVALS(8.4)(1) ])
+##VIEW(STRUCT([panelsExtr, wallsExtr, ductsExtr, stairsExtr]))
 
 
 """Coloriamo le facce"""
@@ -74,4 +78,4 @@ B = (mat(B)*3.577777).tolist()
 roofBase = OFFSET([.6,.6])(STRUCT(MKPOLS([B,EB])))
 roofBaseHPC = COLOR(BLUE)(PROD([ STRUCT([roofBase]), INTERVALS(.05)(1) ]))
 roof = STRUCT([roofBaseHPC,coverHPC,beamsHPC])
-VIEW(roof)
+##VIEW(roof)
