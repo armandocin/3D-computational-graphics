@@ -55,12 +55,24 @@ wallsE = PROD([ STRUCT([walls, ducts]), INTERVALS(8.4)(1) ])
 Y,FY = larCuboids([18,18])
 Y,EY = larCuboidsFacets([Y,FY])
 Y=(mat(Y)*3.63).tolist()
-Y=(mat(Y)+[.31,.31]).tolist()
+Y=(mat(Y)+[.285,.285]).tolist()
 #VIEW(STRUCT(MKPOLS([Y,EY])))
 beamsGrid = OFFSET([.3,.3])(STRUCT(MKPOLS([Y,EY])))
 beamsHPC = PROD([ STRUCT([beamsGrid]), INTERVALS(1.8)(1) ])
 beamsHPC = T(3)(8.45)(beamsHPC)
 #VIEW(beamsHPC)
+
+Y,FY = larCuboids([18,18])
+Y,EY = larCuboidsFacets([Y,FY])
+Y=(mat(Y)*3.67).tolist()
+##YY = AA(LIST)(range(len(Y)))
+##VIEW(larModelNumbering(1,1,1)(Y,[YY,EY],STRUCT(MKPOLS([Y,EY])),1))
+d = [1,38,75,112,149,186,223,260,297,334,371,408,445,482,519,556,593,630,628,591,554,517,480,443,406,369,332,295,258,221,184,147,110,73]
+thinEdges = set(range(len(EY))).difference(d+[i for i in range(37) if i%2==0]+[i for i in range(665,684)])
+thinHPC = STRUCT(AA(POLYLINE)([[Y[EY[e][0]],Y[EY[e][1]]] for e in thinEdges]))
+thinGrid = OFFSET([.15,.15])(thinHPC)
+thin = COLOR(BLACK)(PROD([ STRUCT([thinGrid]), INTERVALS(1.8)(1) ]))
+thin = T(3)(8.45)(thin)
 
 """ Costruzione della copertura del tetto """
 C,FC = larCuboids([1,1])
@@ -79,8 +91,5 @@ B = (mat(B)*3.645).tolist()
 roofBase = OFFSET([.6,.6])(STRUCT(MKPOLS([B,EB])))
 roofBaseHPC = COLOR(BLUE)(PROD([ STRUCT([roofBase]), INTERVALS(.05)(1) ]))
 roofBaseHPC = T(3)(8.4)(roofBaseHPC)
-roof = STRUCT([roofBaseHPC,coverHPC,beamsHPC])
+roof = STRUCT([roofBaseHPC,coverHPC,beamsHPC,thin])
 VIEW(STRUCT([pillarsE, panelsE, wallsE, ductsE, stairsE,roof]))
-
-
-0.9865
