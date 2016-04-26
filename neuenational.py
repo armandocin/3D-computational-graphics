@@ -4,9 +4,6 @@ from larlib import *
 
 filename = "pianoterra.lines"
 lines_pt = lines2lines(filename)
-pianoterra = STRUCT(AA(POLYLINE)(lines_pt))
-##VIEW(pianoterra)
-
 V,EV = lines2lar(lines_pt) ##creo Vertici e Spigoli del piano terra
 VV = AA(LIST)(range(len(V)))
 submodel = STRUCT(MKPOLS((V,EV)))
@@ -44,12 +41,29 @@ pillarsE = PROD([ STRUCT([pillars]), INTERVALS(8.4)(1) ])
 stairsE = PROD([ STRUCT([stairs]), INTERVALS(0.9)(1) ])
 ductsE = PROD([ STRUCT([ducts]), INTERVALS(8.4)(1) ])
 panelsE = PROD([ STRUCT([panels]), INTERVALS(2.5)(1) ]) ###mettere altezza reale pannelli
-wallsE = PROD([ STRUCT([walls, ducts]), INTERVALS(8.4)(1) ])
+wallsE = PROD([ STRUCT([walls]), INTERVALS(8.4)(1) ])
 ##VIEW(STRUCT([pillarsE,panelsE, wallsE, ductsE, stairsE]))
 
-"""Coloriamo le facce"""
-##colors = [CYAN,MAGENTA,WHITE,RED,YELLOW,GREEN,GRAY,ORANGE, BLACK,BLUE,PURPLE,BROWN]
-##VIEW(STRUCT([COLOR(colors[k%12])(cell) for k,cell in enumerate( MKTRIANGLES((V,FV,EV))) ]))
+""" Costruzione del telaio """
+lines = lines2lines("telaiopt.lines")
+H,EH = lines2lar(lines)
+HH = AA(LIST)(range(len(H)))
+##VIEW(larModelNumbering(1,1,1)(H,[HH,EH],STRUCT(MKPOLS([H,EH])),0.1)) 
+H = (mat(H)-H[72]).tolist()
+sx = 50.6/H[54][0]; sy = 8.4/H[54][1]
+scaling = mat([[sx,0,0],[0,sy,0]])
+H = ( mat(H)*scaling ).tolist()
+
+telaioHPC = STRUCT(MKPOLS([H,EH]))
+telaioN = OFFSET([0.1,0.2,0.05])(telaioHPC)
+telaioN = R([2,3])(PI/2)(telaioN) ##mi sposto su x,z in modo da "estrudere" su y
+telaioS = telaioE = telaioO = telaioN
+telaioS = T([1,2])([0.05,50.7])(telaioS)
+telaioO = R([1,2])(PI/2)(telaioO)
+telaioE = T([1,2])([50.7,-0.05])(R([1,2])(PI/2)(telaioE))
+
+telaio = COLOR(BLACK)(STRUCT([telaioN,telaioE,telaioO,telaioS]))
+telaio = T([1,2])(V[88])(telaio)
 
 """ Costruzione della struttra di travi del tetto tramite pyplasm """
 Y,FY = larCuboids([18,18])
@@ -80,7 +94,7 @@ C = (mat(C)*66.21).tolist()
 cover = larModelProduct([[C,FC],larQuote1D([.05])])
 C,FC = cover
 CT = (mat(C)+[0,0,10.25]).tolist() ##lo traslo di 10.25 ovvero 8.4 delle mura + 1.85 lo s spessore del muro
-coverHPC = COLOR(RED)(STRUCT(MKPOLS([CT,FC])))
+coverHPC = COLOR(BLACK)(STRUCT(MKPOLS([CT,FC])))
 #VIEW(coverHPC)
 #VIEW(STRUCT([coverHPC,beamsHPC]))
 
@@ -89,7 +103,9 @@ B,FB = larCuboids([18,18])
 B,EB = larCuboidsFacets([B,FB])
 B = (mat(B)*3.645).tolist()
 roofBase = OFFSET([.6,.6])(STRUCT(MKPOLS([B,EB])))
-roofBaseHPC = COLOR(BLUE)(PROD([ STRUCT([roofBase]), INTERVALS(.05)(1) ]))
+roofBaseHPC = COLOR(BLACK)(PROD([ STRUCT([roofBase]), INTERVALS(.05)(1) ]))
 roofBaseHPC = T(3)(8.4)(roofBaseHPC)
 roof = STRUCT([roofBaseHPC,coverHPC,beamsHPC,thin])
-VIEW(STRUCT([pillarsE, panelsE, wallsE, ductsE, stairsE,roof]))
+
+pianoterra = STRUCT([pillarsE,panelsE, telaio, ductsE, stairsE])
+VIEW(pianoterra)
