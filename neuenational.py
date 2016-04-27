@@ -57,7 +57,7 @@ telaioHPC = STRUCT(MKPOLS([H,EH]))
 telaioN = OFFSET([0.1,0.2,0.05])(telaioHPC)
 telaioN = R([2,3])(PI/2)(telaioN) ##mi sposto su x,z in modo da "estrudere" su y
 telaioS = telaioO = telaioN
-telaioS = T([1,2])([0.05,50.7])(telaioS)
+telaioS = T([1,2])([0.05,50.5])(telaioS)
 telaioO = R([1,2])(PI/2)(telaioO)
 
 lines = lines2lines("telaiopt2.lines")
@@ -75,7 +75,7 @@ talaioEdges = set(range(len(EH))).difference(doorsEdges)
 telaioHPC = STRUCT(AA(POLYLINE)([[H[EH[e][0]],H[EH[e][1]]] for e in talaioEdges]))
 doors = OFFSET([0.2,0.25,0.05])(doorsHPC)
 telaioE = OFFSET([0.1,0.2,0.05])(telaioHPC)
-telaioE = STRUCT([doors,telaioE])
+telaioE = (STRUCT([doors,telaioE])
 telaioE = R([2,3])(PI/2)(telaioE)
 telaioE = T([1,2])([50.5,-0.05])(R([1,2])(PI/2)(telaioE))
 
