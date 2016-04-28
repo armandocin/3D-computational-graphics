@@ -75,7 +75,7 @@ talaioEdges = set(range(len(EH))).difference(doorsEdges)
 telaioHPC = STRUCT(AA(POLYLINE)([[H[EH[e][0]],H[EH[e][1]]] for e in talaioEdges]))
 doors = OFFSET([0.2,0.25,0.05])(doorsHPC)
 telaioE = OFFSET([0.1,0.2,0.05])(telaioHPC)
-telaioE = (STRUCT([doors,telaioE])
+telaioE = STRUCT([doors,telaioE])
 telaioE = R([2,3])(PI/2)(telaioE)
 telaioE = T([1,2])([50.5,-0.05])(R([1,2])(PI/2)(telaioE))
 
@@ -93,6 +93,7 @@ beamsHPC = PROD([ STRUCT([beamsGrid]), INTERVALS(1.8)(1) ])
 beamsHPC = T(3)(8.65)(beamsHPC)
 #VIEW(beamsHPC)
 
+""" travi sottili """
 Y,FY = larCuboids([18,18])
 Y,EY = larCuboidsFacets([Y,FY])
 Y=(mat(Y)*3.597).tolist()
@@ -122,7 +123,22 @@ B = (mat(B)*3.575).tolist()
 roofBase = OFFSET([.5,.5])(STRUCT(MKPOLS([B,EB])))
 roofBaseHPC = COLOR(GRAY)(PROD([ STRUCT([roofBase]), INTERVALS(.05)(1) ]))
 roofBaseHPC = T(3)(8.6)(roofBaseHPC) ##8.4 + l'offset su y del telaio
-roof = STRUCT([roofBaseHPC,coverHPC,beamsHPC,thin])
+
+""" griglia interna """
+V,FV = larCuboids([8,8])
+V,EV = larCuboidsFacets([V,FV])
+trasl = 2*3.577 +.25 + .107
+V = (mat(V)*.405roof = STRUCT([roofBaseHPC,coverHPC,beamsHPC,thin,grid])
+).tolist()
+V = (mat(V) + [trasl,trasl]).tolist()
+##VIEW(STRUCT(MKPOLS((V,EV))))
+smallGrid = T(3)(8.75)(STRUCT(MKPOLS((V,EV))))
+smallGrid = OFFSET([.05,.05,.05])(smallGrid)
+grid = STRUCT(NN(14)([smallGrid,T(1)((8*.416)+.25)]))
+grid = STRUCT(NN(14)([grid,T(2)((8*.416)+.25)]))
+##VIEW(grid)
+
+roof = STRUCT([roofBaseHPC,coverHPC,beamsHPC,thin,grid])
 
 pianoterra = STRUCT([pillarsE,panelsE, telaio, ductsE, stairsE,roof])
 VIEW(pianoterra)
