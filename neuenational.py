@@ -147,5 +147,8 @@ telaioE = T([1,2])([50.25,-0.05])(R([1,2])(PI/2)(telaioE))
 telaio = STRUCT([telaioN,telaioE,telaioO,telaioS])
 telaio = T([1,2])(SUM([[7.132334158738434, 7.237221425778705],[0,.25]]))(telaio) ##V[30]= [7.132334158738434, 7.237221425778705] (v30 e' il vertice in basso a sinistra delle mura)
 
+"""Visualizzazione Pianoterra completo"""
 pianoterra = STRUCT([pillarsE,panelsE, telaio, ductsE, stairsE,roof])
 VIEW(pianoterra)
+
+""" bla bla bla """
