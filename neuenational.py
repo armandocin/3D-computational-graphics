@@ -1,92 +1,6 @@
+#! /usr/bin/python
+
 from larlib import *
-
-""" Mura Pianoterra """
-
-filename = "pianoterra.lines"
-lines_pt = lines2lines(filename)
-V,EV = lines2lar(lines_pt) ##creo Vertici e Spigoli del piano terra
-VV = AA(LIST)(range(len(V)))
-submodel = STRUCT(MKPOLS((V,EV)))
-##VIEW(larModelNumbering(1,1,1)(V,[VV,EV],submodel,0.07))
-
-""" trasform1azione di scala """
-assert EV[32] == (30,69) ##spigolo di un muro del pianoterra. 30 e 69 sono i vertici
-assert V[30],V[69] == ([7.146513749511273, 7.251609539945262], [57.54651374951127, 7.251609539945262])
-V = ((mat(V) - [V[111][0],V[46][1]]) * (50.3/(V[69][0]-V[30][0]))).tolist() ##voglio allineare i pilastri in modo corretto e i vertici 8 e 4 sono quelli che prendo per trovare il vettore di traslazione su x e y
-
-""" Divido i muri di altezza diversa """
-stairsEdges = [4,8,3,84,51,136,73,21,123,116,87,113,5,125,27,127,2,107] ##spigoli elle ringhiere delle scale
-lines_stairs = [[V[EV[e][0]],V[EV[e][1]]] for e in stairsEdges]
-ductsEdges = [91,25,78,126,24,26,95,89] ##spigoli dei condotti dell'aria
-panelsEdges = [63,10,47,40,58,131,9,17,75,142,132,59,129,114,12,94,33,104,151,46,39,14,134,64,77,147] ##spigoli dei pannelli
-wallsEdges = [32,61,106,45]
-pillarsEdges = set(range(len(EV))).difference(panelsEdges+ductsEdges+stairsEdges+wallsEdges)
-
-""" Faccio l'OFFSET """
-pillarsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in pillarsEdges]))
-stairsHPCs = STRUCT(AA(POLYLINE)(lines_stairs))
-ductsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in ductsEdges]))
-panelsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in panelsEdges]))
-wallsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in wallsEdges]))
-pillars = COLOR(BLACK)(OFFSET([.25,.25])(pillarsHPCs))
-stairs = COLOR(RED)(OFFSET([.025,.025])(stairsHPCs))
-ducts = COLOR(GREEN)(OFFSET([.5,.5])(ductsHPCs))
-panels = COLOR(YELLOW)(OFFSET([.25,.25])(panelsHPCs))
-walls = COLOR(CYAN)(OFFSET([.02,.02])(wallsHPCs))
-##VIEW(STRUCT([ stairs,panels,walls,ducts,pillars ]))
-
-"""Estrusione delle mura piano terra"""
-pillarsE = PROD([ STRUCT([pillars]), INTERVALS(8.4)(1) ])
-stairsE = PROD([ STRUCT([stairs]), INTERVALS(0.9)(1) ])
-ductsE = PROD([ STRUCT([ducts]), INTERVALS(8.4)(1) ])
-panelsE = PROD([ STRUCT([panels]), INTERVALS(4.4)(1) ]) ###mettere altezza reale pannelli
-wallsE = PROD([ STRUCT([walls]), INTERVALS(8.4)(1) ])
-##VIEW(STRUCT([pillarsE,panelsE, wallsE, ductsE, stairsE]))
-
-""" Costruzione del telaio """
-lines = lines2lines("telaiopt.lines")
-H,FH,EH,poly = larFromLines(lines)
-HH = AA(LIST)(range(len(H)))
-##VIEW(larModelNumbering(1,1,1)(H,[HH,EH,FH],STRUCT(MKPOLS([H,EH])),0.1)) 
-H = (mat(H)-H[60]).tolist()
-sx = 50.15/H[53][0]; sy = 8.4/H[53][1]
-scaling = mat([[sx,0,0],[0,sy,0]])
-H = ( mat(H)*scaling ).tolist()
-
-vetriHPC = STRUCT(MKPOLS((H,FH)))
-VIEW(EXPLODE(1.2,1.2,1.2)(MKPOLS([H,FH])))
-vetri = T(3)(0.075)(OFFSET([0.0,0.0,0.03])(vetriHPC))
-telaioHPC = STRUCT(MKPOLS([H,EH]))
-telaioN = STRUCT([vetri,COLOR(BLACK)(OFFSET([0.1,0.2,0.25])(telaioHPC))])
-telaioN = R([2,3])(PI/2)(telaioN) ##mi sposto su x,z in modo da "estrudere" su y
-telaioS = telaioO = telaioN
-telaioS = T([1,2])([0.25,50.25])(telaioS)
-telaioO = R([1,2])(PI/2)(telaioO)
-
-lines = lines2lines("telaiopt2.lines")
-H,FH,EH,poly = larFromLines(lines)
-HH = AA(LIST)(range(len(H)))
-##VIEW(larModelNumbering(1,1,1)(H,[HH,EH,FH],STRUCT(MKPOLS([H,EH])),0.1)) 
-H = (mat(H)-H[20]).tolist()
-sx = 50.15/H[80][0]; sy = 8.4/H[80][1]
-scaling = mat([[sx,0,0],[0,sy,0]])
-H = ( mat(H)*scaling ).tolist()
-
-vetriHPC = STRUCT(MKPOLS((H,FH)))
-VIEW(EXPLODE(1.2,1.2,1.2)(MKPOLS([H,FH])))
-vetri = T(3)(0.075)(OFFSET([0.0,0.0,0.03])(vetriHPC))
-doorsEdges = [43,69,35,12,67,4,109,40,102,28]
-doorsHPC = STRUCT(MKPOLS([H,[EH[i] for i in doorsEdges]]))
-talaioEdges = set(range(len(EH))).difference(doorsEdges)
-telaioHPC = STRUCT(AA(POLYLINE)([[H[EH[e][0]],H[EH[e][1]]] for e in talaioEdges]))
-doors = OFFSET([0.2,0.25,0.25])(doorsHPC)
-telaioE = OFFSET([0.1,0.2,0.25])(telaioHPC)
-telaioE = STRUCT([COLOR(GRAY)(STRUCT([doors,telaioE])),vetri])
-telaioE = R([2,3])(PI/2)(telaioE)
-telaioE = T([1,2])([50.25,-0.05])(R([1,2])(PI/2)(telaioE))
-
-telaio = STRUCT([telaioN,telaioE,telaioO,telaioS])
-telaio = T([1,2])(SUM([[7.132334158738434, 7.237221425778705],[0,.25]]))(telaio) ##V[30]= [7.132334158738434, 7.237221425778705] (v30 è il vertice in basso a sinistra delle mura)
 
 """ Costruzione della struttra di travi del tetto tramite pyplasm """
 Y,FY = larCuboids([18,18])
@@ -144,6 +58,94 @@ grid = STRUCT(NN(14)([grid,T(2)((8*.416)+.25)]))
 ##VIEW(grid)
 
 roof = STRUCT([roofBaseHPC,coverHPC,beamsHPC,thin,grid])
+
+""" Mura Pianoterra """
+
+filename = "pianoterra.lines"
+lines_pt = lines2lines(filename)
+V,EV = lines2lar(lines_pt) ##creo Vertici e Spigoli del piano terra
+VV = AA(LIST)(range(len(V)))
+submodel = STRUCT(MKPOLS((V,EV)))
+##VIEW(larModelNumbering(1,1,1)(V,[VV,EV],submodel,0.07))
+
+""" trasform1azione di scala """
+assert EV[32] == (30,69) ##spigolo di un muro del pianoterra. 30 e 69 sono i vertici
+assert V[30],V[69] == ([7.146513749511273, 7.251609539945262], [57.54651374951127, 7.251609539945262])
+V = ((mat(V) - [V[111][0],V[46][1]]) * (50.3/(V[69][0]-V[30][0]))).tolist() ##voglio allineare i pilastri in modo corretto e i vertici 8 e 4 sono quelli che prendo per trovare il vettore di traslazione su x e y
+
+""" Divido i muri di altezza diversa """
+stairsEdges = [4,8,3,84,51,136,73,21,123,116,87,113,5,125,27,127,2,107] ##spigoli elle ringhiere delle scale
+lines_stairs = [[V[EV[e][0]],V[EV[e][1]]] for e in stairsEdges]
+ductsEdges = [91,25,78,126,24,26,95,89] ##spigoli dei condotti dell'aria
+panelsEdges = [63,10,47,40,58,131,9,17,75,142,132,59,129,114,12,94,33,104,151,46,39,14,134,64,77,147] ##spigoli dei pannelli
+wallsEdges = [32,61,106,45]
+pillarsEdges = set(range(len(EV))).difference(panelsEdges+ductsEdges+stairsEdges+wallsEdges)
+
+""" Faccio l'OFFSET """
+pillarsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in pillarsEdges]))
+stairsHPCs = STRUCT(AA(POLYLINE)(lines_stairs))
+ductsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in ductsEdges]))
+panelsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in panelsEdges]))
+wallsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in wallsEdges]))
+pillars = COLOR(BLACK)(OFFSET([.25,.25])(pillarsHPCs))
+stairs = COLOR(RED)(OFFSET([.025,.025])(stairsHPCs))
+ducts = COLOR(GREEN)(OFFSET([.5,.5])(ductsHPCs))
+panels = COLOR(YELLOW)(OFFSET([.25,.25])(panelsHPCs))
+walls = COLOR(CYAN)(OFFSET([.02,.02])(wallsHPCs))
+##VIEW(STRUCT([ stairs,panels,walls,ducts,pillars ]))
+
+"""Estrusione delle mura piano terra"""
+pillarsE = PROD([ STRUCT([pillars]), INTERVALS(8.4)(1) ])
+stairsE = PROD([ STRUCT([stairs]), INTERVALS(0.9)(1) ])
+ductsE = PROD([ STRUCT([ducts]), INTERVALS(8.4)(1) ])
+panelsE = PROD([ STRUCT([panels]), INTERVALS(4.4)(1) ]) ###mettere altezza reale pannelli
+wallsE = PROD([ STRUCT([walls]), INTERVALS(8.4)(1) ])
+##VIEW(STRUCT([pillarsE,panelsE, wallsE, ductsE, stairsE]))
+
+""" Costruzione del telaio """
+lines = lines2lines("telaiopt.lines")
+H,FH,EH,poly = larFromLines(lines)
+HH = AA(LIST)(range(len(H)))
+##VIEW(larModelNumbering(1,1,1)(H,[HH,EH,FH],STRUCT(MKPOLS([H,EH])),0.1)) 
+H = (mat(H)-H[60]).tolist()
+sx = 50.15/H[53][0]; sy = 8.4/H[53][1]
+scaling = mat([[sx,0,0],[0,sy,0]])
+H = ( mat(H)*scaling ).tolist()
+
+vetriHPC = STRUCT(MKPOLS((H,FH)))
+##VIEW(EXPLODE(1.2,1.2,1.2)(MKPOLS([H,FH])))
+vetri = T(3)(0.075)(OFFSET([0.0,0.0,0.03])(vetriHPC))
+telaioHPC = STRUCT(MKPOLS([H,EH]))
+telaioN = STRUCT([vetri,COLOR(GRAY)(OFFSET([0.1,0.2,0.25])(telaioHPC))])
+telaioN = R([2,3])(PI/2)(telaioN) ##mi sposto su x,z in modo da "estrudere" su y
+telaioS = telaioO = telaioN
+telaioS = T([1,2])([0.25,50.25])(telaioS)
+telaioO = R([1,2])(PI/2)(telaioO)
+
+lines = lines2lines("telaiopt2.lines")
+H,FH,EH,poly = larFromLines(lines)
+HH = AA(LIST)(range(len(H)))
+##VIEW(larModelNumbering(1,1,1)(H,[HH,EH,FH],STRUCT(MKPOLS([H,EH])),0.1)) 
+H = (mat(H)-H[20]).tolist()
+sx = 50.15/H[80][0]; sy = 8.4/H[80][1]
+scaling = mat([[sx,0,0],[0,sy,0]])
+H = ( mat(H)*scaling ).tolist()
+
+vetriHPC = STRUCT(MKPOLS((H,FH)))
+##VIEW(EXPLODE(1.2,1.2,1.2)(MKPOLS([H,FH])))
+vetri = T(3)(0.11)(OFFSET([0.0,0.0,0.03])(vetriHPC))
+doorsEdges = [43,69,35,12,67,4,109,40,102,28]
+doorsHPC = STRUCT(MKPOLS([H,[EH[i] for i in doorsEdges]]))
+talaioEdges = set(range(len(EH))).difference(doorsEdges)
+telaioHPC = STRUCT(AA(POLYLINE)([[H[EH[e][0]],H[EH[e][1]]] for e in talaioEdges]))
+doors = OFFSET([0.2,0.25,0.25])(doorsHPC)
+telaioE = OFFSET([0.1,0.2,0.25])(telaioHPC)
+telaioE = STRUCT([COLOR(GRAY)(STRUCT([doors,telaioE])),vetri])
+telaioE = R([2,3])(PI/2)(telaioE)
+telaioE = T([1,2])([50.25,-0.05])(R([1,2])(PI/2)(telaioE))
+
+telaio = STRUCT([telaioN,telaioE,telaioO,telaioS])
+telaio = T([1,2])(SUM([[7.132334158738434, 7.237221425778705],[0,.25]]))(telaio) ##V[30]= [7.132334158738434, 7.237221425778705] (v30 e' il vertice in basso a sinistra delle mura)
 
 pianoterra = STRUCT([pillarsE,panelsE, telaio, ductsE, stairsE,roof])
 VIEW(pianoterra)
