@@ -39,42 +39,49 @@ walls = COLOR(CYAN)(OFFSET([.02,.02])(wallsHPCs))
 pillarsE = PROD([ STRUCT([pillars]), INTERVALS(8.4)(1) ])
 stairsE = PROD([ STRUCT([stairs]), INTERVALS(0.9)(1) ])
 ductsE = PROD([ STRUCT([ducts]), INTERVALS(8.4)(1) ])
-panelsE = PROD([ STRUCT([panels]), INTERVALS(2.5)(1) ]) ###mettere altezza reale pannelli
+panelsE = PROD([ STRUCT([panels]), INTERVALS(4.4)(1) ]) ###mettere altezza reale pannelli
 wallsE = PROD([ STRUCT([walls]), INTERVALS(8.4)(1) ])
 ##VIEW(STRUCT([pillarsE,panelsE, wallsE, ductsE, stairsE]))
 
 """ Costruzione del telaio """
 lines = lines2lines("telaiopt.lines")
-H,EH = lines2lar(lines)
+H,FH,EH,poly = larFromLines(lines)
 HH = AA(LIST)(range(len(H)))
-##VIEW(larModelNumbering(1,1,1)(H,[HH,EH],STRUCT(MKPOLS([H,EH])),0.1)) 
-H = (mat(H)-H[72]).tolist()
-sx = 50.15/H[54][0]; sy = 8.4/H[54][1]
+##VIEW(larModelNumbering(1,1,1)(H,[HH,EH,FH],STRUCT(MKPOLS([H,EH])),0.1)) 
+H = (mat(H)-H[60]).tolist()
+sx = 50.15/H[53][0]; sy = 8.4/H[53][1]
 scaling = mat([[sx,0,0],[0,sy,0]])
 H = ( mat(H)*scaling ).tolist()
 
+vetriHPC = STRUCT(MKPOLS((H,FH)))
+VIEW(EXPLODE(1.2,1.2,1.2)(MKPOLS([H,FH])))
+vetri = T(3)(0.075)(OFFSET([0.0,0.0,0.03])(vetriHPC))
 telaioHPC = STRUCT(MKPOLS([H,EH]))
-telaioN = OFFSET([0.1,0.2,0.25])(telaioHPC)
+telaioN = STRUCT([vetri,COLOR(BLACK)(OFFSET([0.1,0.2,0.25])(telaioHPC))])
 telaioN = R([2,3])(PI/2)(telaioN) ##mi sposto su x,z in modo da "estrudere" su y
 telaioS = telaioO = telaioN
 telaioS = T([1,2])([0.25,50.25])(telaioS)
 telaioO = R([1,2])(PI/2)(telaioO)
 
 lines = lines2lines("telaiopt2.lines")
-H,EH = lines2lar(lines)
+H,FH,EH,poly = larFromLines(lines)
 HH = AA(LIST)(range(len(H)))
-##VIEW(larModelNumbering(1,1,1)(H,[HH,EH],STRUCT(MKPOLS([H,EH])),0.1)) 
-H = (mat(H)-H[84]).tolist()
-sx = 50.15/H[65][0]; sy = 8.4/H[65][1]
+##VIEW(larModelNumbering(1,1,1)(H,[HH,EH,FH],STRUCT(MKPOLS([H,EH])),0.1)) 
+H = (mat(H)-H[20]).tolist()
+sx = 50.15/H[80][0]; sy = 8.4/H[80][1]
 scaling = mat([[sx,0,0],[0,sy,0]])
 H = ( mat(H)*scaling ).tolist()
-doorsEdges = [41,33,39,13,67,4,110,27,123,38]
+
+vetriHPC = STRUCT(MKPOLS((H,FH)))
+VIEW(EXPLODE(1.2,1.2,1.2)(MKPOLS([H,FH])))
+vetri = T(3)(0.075)(OFFSET([0.0,0.0,0.03])(vetriHPC))
+doorsEdges = [43,69,35,12,67,4,109,40,102,28]
 doorsHPC = STRUCT(MKPOLS([H,[EH[i] for i in doorsEdges]]))
 talaioEdges = set(range(len(EH))).difference(doorsEdges)
 telaioHPC = STRUCT(AA(POLYLINE)([[H[EH[e][0]],H[EH[e][1]]] for e in talaioEdges]))
 doors = OFFSET([0.2,0.25,0.25])(doorsHPC)
 telaioE = OFFSET([0.1,0.2,0.25])(telaioHPC)
-telaioE = STRUCT([doors,telaioE])
+telaioE = STRUCT([COLOR(GRAY)(STRUCT([doors,telaioE])),vetri])
 telaioE = R([2,3])(PI/2)(telaioE)
 telaioE = T([1,2])([50.25,-0.05])(R([1,2])(PI/2)(telaioE))
 
@@ -140,6 +147,3 @@ roof = STRUCT([roofBaseHPC,coverHPC,beamsHPC,thin,grid])
 
 pianoterra = STRUCT([pillarsE,panelsE, telaio, ductsE, stairsE,roof])
 VIEW(pianoterra)
-
-
-#TODO: nuovo scalamento del telaio 
