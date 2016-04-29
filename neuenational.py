@@ -49,15 +49,15 @@ H,EH = lines2lar(lines)
 HH = AA(LIST)(range(len(H)))
 ##VIEW(larModelNumbering(1,1,1)(H,[HH,EH],STRUCT(MKPOLS([H,EH])),0.1)) 
 H = (mat(H)-H[72]).tolist()
-sx = 50.4/H[54][0]; sy = 8.4/H[54][1]
+sx = 50.15/H[54][0]; sy = 8.4/H[54][1]
 scaling = mat([[sx,0,0],[0,sy,0]])
 H = ( mat(H)*scaling ).tolist()
 
 telaioHPC = STRUCT(MKPOLS([H,EH]))
-telaioN = OFFSET([0.1,0.2,0.05])(telaioHPC)
+telaioN = OFFSET([0.1,0.2,0.25])(telaioHPC)
 telaioN = R([2,3])(PI/2)(telaioN) ##mi sposto su x,z in modo da "estrudere" su y
 telaioS = telaioO = telaioN
-telaioS = T([1,2])([0.05,50.5])(telaioS)
+telaioS = T([1,2])([0.25,50.25])(telaioS)
 telaioO = R([1,2])(PI/2)(telaioO)
 
 lines = lines2lines("telaiopt2.lines")
@@ -65,22 +65,21 @@ H,EH = lines2lar(lines)
 HH = AA(LIST)(range(len(H)))
 ##VIEW(larModelNumbering(1,1,1)(H,[HH,EH],STRUCT(MKPOLS([H,EH])),0.1)) 
 H = (mat(H)-H[84]).tolist()
-sx = 50.4/H[65][0]; sy = 8.4/H[65][1]
+sx = 50.15/H[65][0]; sy = 8.4/H[65][1]
 scaling = mat([[sx,0,0],[0,sy,0]])
 H = ( mat(H)*scaling ).tolist()
-
 doorsEdges = [41,33,39,13,67,4,110,27,123,38]
 doorsHPC = STRUCT(MKPOLS([H,[EH[i] for i in doorsEdges]]))
 talaioEdges = set(range(len(EH))).difference(doorsEdges)
 telaioHPC = STRUCT(AA(POLYLINE)([[H[EH[e][0]],H[EH[e][1]]] for e in talaioEdges]))
-doors = OFFSET([0.2,0.25,0.05])(doorsHPC)
-telaioE = OFFSET([0.1,0.2,0.05])(telaioHPC)
+doors = OFFSET([0.2,0.25,0.25])(doorsHPC)
+telaioE = OFFSET([0.1,0.2,0.25])(telaioHPC)
 telaioE = STRUCT([doors,telaioE])
 telaioE = R([2,3])(PI/2)(telaioE)
-telaioE = T([1,2])([50.5,-0.05])(R([1,2])(PI/2)(telaioE))
+telaioE = T([1,2])([50.25,-0.05])(R([1,2])(PI/2)(telaioE))
 
-telaio = COLOR(BLACK)(STRUCT([telaioN,telaioE,telaioO,telaioS]))
-telaio = T([1,2])(V[30])(telaio)
+telaio = STRUCT([telaioN,telaioE,telaioO,telaioS])
+telaio = T([1,2])(SUM([[7.132334158738434, 7.237221425778705],[0,.25]]))(telaio) ##V[30]= [7.132334158738434, 7.237221425778705] (v30 è il vertice in basso a sinistra delle mura)
 
 """ Costruzione della struttra di travi del tetto tramite pyplasm """
 Y,FY = larCuboids([18,18])
@@ -128,8 +127,7 @@ roofBaseHPC = T(3)(8.6)(roofBaseHPC) ##8.4 + l'offset su y del telaio
 V,FV = larCuboids([8,8])
 V,EV = larCuboidsFacets([V,FV])
 trasl = 2*3.577 +.25 + .107
-V = (mat(V)*.405roof = STRUCT([roofBaseHPC,coverHPC,beamsHPC,thin,grid])
-).tolist()
+V = (mat(V)*.405).tolist()
 V = (mat(V) + [trasl,trasl]).tolist()
 ##VIEW(STRUCT(MKPOLS((V,EV))))
 smallGrid = T(3)(8.75)(STRUCT(MKPOLS((V,EV))))
@@ -142,3 +140,6 @@ roof = STRUCT([roofBaseHPC,coverHPC,beamsHPC,thin,grid])
 
 pianoterra = STRUCT([pillarsE,panelsE, telaio, ductsE, stairsE,roof])
 VIEW(pianoterra)
+
+
+#TODO: nuovo scalamento del telaio 
