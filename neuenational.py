@@ -95,11 +95,11 @@ walls = COLOR(CYAN)(OFFSET([.02,.02])(wallsHPCs))
 ##VIEW(STRUCT([ stairs,panels,walls,ducts,pillars ]))
 
 """Estrusione delle mura piano terra"""
-pillarsE = PROD([ STRUCT([pillars]), INTERVALS(8.4)(1) ])
-stairsE = PROD([ STRUCT([stairs]), INTERVALS(0.9)(1) ])
-ductsE = PROD([ STRUCT([ducts]), INTERVALS(8.4)(1) ])
-panelsE = PROD([ STRUCT([panels]), INTERVALS(4.4)(1) ]) ###mettere altezza reale pannelli
-wallsE = PROD([ STRUCT([walls]), INTERVALS(8.4)(1) ])
+pillarsE = PROD([ pillars, INTERVALS(8.4)(1) ])
+stairsE = PROD([ stairs, INTERVALS(0.9)(1) ])
+ductsE = PROD([ ducts, INTERVALS(8.4)(1) ])
+panelsE = PROD([ panels, INTERVALS(4.4)(1) ]) ###mettere altezza reale pannelli
+wallsE = PROD([ walls, INTERVALS(8.4)(1) ])
 ##VIEW(STRUCT([pillarsE,panelsE, wallsE, ductsE, stairsE]))
 
 """ Costruzione del telaio """
@@ -160,18 +160,37 @@ submodel = STRUCT(MKPOLS((V,EV)))
 ##VIEW(larModelNumbering(1,1,1)(V,[VV,EV],submodel,0.04))
 
 """ Traslazione nell'origine e scalamento """
-V = ((mat(V) - V[362])*108).tolist()
+V = ((mat(V) - V[355])*108).tolist()
 submodel = STRUCT(MKPOLS((V,EV)))
 ##VIEW(larModelNumbering(1,1,1)(V,[VV,EV],submodel,5))
 """ Faccio l'OFFSET """
 semint = OFFSET([.5,.5])(STRUCT(MKPOLS((V,EV))))
 
 #TODO: separazione spigoli
-#TODO: estrusione mura
+""" Estrusione mura """
+semint = PROD([ semint, INTERVALS(4)(1) ])
 
 """ Creazione colonne piccole """
 C,FC = larCuboids([1,1])
-C = ((mat(C)*.5)+ [(V[392][0]+1.3),7.4]).tolist()
-column = [C,FC]#larQuote
-colonne = STRUCT(NN(12)([STRUCT(MKPOLS(column)),T(1)(7.2)]))
-colonne = COLOR(RED)(STRUCT(NN(12)([colonne,T(2)(7.2)])))
+C = ((mat(C)*.5)+ [(V[367][0]+1.4),7.4]).tolist()
+columns = PROD([ STRUCT(MKPOLS((C,FC))), INTERVALS(4)(1) ])
+colonne = STRUCT(NN(12)([columns,T(1)(7.2)]))
+colonne = STRUCT(NN(12)([colonne,T(2)(7.2)]))
+
+""" Creazione colonne grandi """
+##colonne grandi verticali
+C,FC = larCuboids([1,1])
+C = (mat(C)+ [61.1,21.1216]).tolist()
+columnsBV = [C,FC]
+colonneGV = STRUCT(NN(2)([STRUCT(MKPOLS(columnsBV)),T(1)(28.8)]))
+colonneGV = STRUCT(NN(2)([colonneGV,T(2)(64.8)]))
+#colonne grandi orizontali
+C,FC = larCuboids([1,1])
+C = (mat(C)+ [43.1,39.1216]).tolist()
+columnsBO = [C,FC]
+colonneGO = STRUCT(NN(2)([STRUCT(MKPOLS(columnsBO)),T(2)(28.8)]))
+colonneGO = STRUCT(NN(2)([colonneGO,T(1)(64.8)]))
+
+colonneGV = PROD([ colonneGV, INTERVALS(4)(1) ])
+colonneGO = PROD([ colonneGO, INTERVALS(4)(1) ])
+colonneG = STRUCT([colonneGO,colonneGV])
