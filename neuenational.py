@@ -151,4 +151,27 @@ telaio = T([1,2])(SUM([[7.132334158738434, 7.237221425778705],[0,.25]]))(telaio)
 pianoterra = STRUCT([pillarsE,panelsE, telaio, ductsE, stairsE,roof])
 VIEW(pianoterra)
 
-""" bla bla bla """
+""" Creazione mura seminterrato """
+filename = "seminterrato.lines"
+lines_ps = lines2lines(filename)
+V,EV = lines2lar(lines_ps) ##creo Vertici e Spigoli del piano terra
+VV = AA(LIST)(range(len(V)))
+submodel = STRUCT(MKPOLS((V,EV)))
+##VIEW(larModelNumbering(1,1,1)(V,[VV,EV],submodel,0.04))
+
+""" Traslazione nell'origine e scalamento """
+V = ((mat(V) - V[362])*108).tolist()
+submodel = STRUCT(MKPOLS((V,EV)))
+##VIEW(larModelNumbering(1,1,1)(V,[VV,EV],submodel,5))
+""" Faccio l'OFFSET """
+semint = OFFSET([.5,.5])(STRUCT(MKPOLS((V,EV))))
+
+#TODO: separazione spigoli
+#TODO: estrusione mura
+
+""" Creazione colonne piccole """
+C,FC = larCuboids([1,1])
+C = ((mat(C)*.5)+ [(V[392][0]+1.3),7.4]).tolist()
+column = [C,FC]#larQuote
+colonne = STRUCT(NN(12)([STRUCT(MKPOLS(column)),T(1)(7.2)]))
+colonne = COLOR(RED)(STRUCT(NN(12)([colonne,T(2)(7.2)])))
