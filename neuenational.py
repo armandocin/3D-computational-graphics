@@ -163,12 +163,23 @@ submodel = STRUCT(MKPOLS((V,EV)))
 V = ((mat(V) - V[355])*108).tolist()
 submodel = STRUCT(MKPOLS((V,EV)))
 ##VIEW(larModelNumbering(1,1,1)(V,[VV,EV],submodel,5))
-""" Faccio l'OFFSET """
-semint = OFFSET([.5,.5])(STRUCT(MKPOLS((V,EV))))
 
+""" Separazione tipi di muro """
 #TODO: separazione spigoli
+tallWallsEdges = [227,91,380,9,268,391,326,241,262,103,128,214,313,187,244,312,73,179,165]
+wallsEdges = set(range(len(EV))).difference(tallWallsEdges)
+
+tallWallsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in tallWallsEdges]))
+wallsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in wallsEdges]))
+
+""" Faccio l'OFFSET """
+#semint = OFFSET([.5,.5])(STRUCT(MKPOLS((V,EV))))
+semint = OFFSET([.5,.5])(wallsHPCs)
+tallWalls = COLOR(CYAN)(OFFSET([.5,.5])(tallWallsHPCs))
+
 """ Estrusione mura """
 semint = PROD([ semint, INTERVALS(4)(1) ])
+tallWalls = T(3)(-2)(PROD([ tallWalls, INTERVALS(6)(1) ]))
 
 """ Creazione colonne piccole """
 C,FC = larCuboids([1,1])
@@ -194,3 +205,18 @@ colonneGO = STRUCT(NN(2)([colonneGO,T(1)(64.8)]))
 colonneGV = PROD([ colonneGV, INTERVALS(4)(1) ])
 colonneGO = PROD([ colonneGO, INTERVALS(4)(1) ])
 colonneG = STRUCT([colonneGO,colonneGV])
+
+""" Pavimento del Seminterrato """
+lines = lines2lines("pavimento-semint.lines")
+W,FW,EW,poly = larFromLines(lines)
+WW = AA(LIST)(range(len(W)))
+submodel = STRUCT(MKPOLS((W,EW)))
+##VIEW(larModelNumbering(1,1,1)(W,[WW,EW,FW],submodel,0.07))
+W = ((mat(W) - W[1])*108).tolist()
+
+floors = (W,[FW[k] for k in range(len(FW)) if k!=5 and k!=4])
+lower_floors = DIFFERENCE([STRUCT(MKPOLS([W,FW])),STRUCT(MKPOLS(floors))])
+lower_floors = T(3)(-2)(PROD([ (lower_floors), INTERVALS(.3)(1) ]))
+b = OFFSET([.3,.3])(STRUCT(MKPOLS((W,[EW[5],EW[15]])))) ##muri sotto le scale
+b = T(3)(-2)(PROD([b, INTERVALS(2)(1) ]))
+regular_floors = PROD([STRUCT(MKPOLS(floors)), INTERVALS(.3)(1) ])
