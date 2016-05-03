@@ -14,15 +14,12 @@ beamsHPC = T(3)(8.65)(beamsHPC)
 #VIEW(beamsHPC)
 
 """ travi sottili """
-Y,FY = larCuboids([18,18])
-Y,EY = larCuboidsFacets([Y,FY])
-Y=(mat(Y)*3.597).tolist()
-##YY = AA(LIST)(range(len(Y)))
-##VIEW(larModelNumbering(1,1,1)(Y,[YY,EY],STRUCT(MKPOLS([Y,EY])),1))
-d = [1,38,75,112,149,186,223,260,297,334,371,408,445,482,519,556,593,630,628,591,554,517,480,443,406,369,332,295,258,221,184,147,110,73]
-thinEdges = set(range(len(EY))).difference(d+[i for i in range(37) if i%2==0]+[i for i in range(665,684)])
-thinHPC = STRUCT(AA(POLYLINE)([[Y[EY[e][0]],Y[EY[e][1]]] for e in thinEdges]))
-thinGrid = OFFSET([.1,.1])(thinHPC)
+U,FU = larCuboids([18,18])
+U,EU = larCuboidsFacets([U,FU])
+U=(mat(U)*3.597).tolist()
+boundaryEdges = boundaryCells(FU,EU)
+EU = [EU[i] for i in set(range(len(EU))).difference(boundaryEdges)]
+thinGrid = OFFSET([.1,.1])(STRUCT(MKPOLS([U,EU])))
 thin = COLOR(GRAY)(PROD([ STRUCT([thinGrid]), INTERVALS(1.8)(1) ]))
 thin = T(3)(8.65)(thin)
 
@@ -179,9 +176,32 @@ tallWalls = COLOR(CYAN)(OFFSET([.5,.5])(tallWallsHPCs))
 
 """ Estrusione mura """
 semint = PROD([ semint, INTERVALS(4)(1) ])
-tallWalls = T(3)(-2)(PROD([ tallWalls, INTERVALS(6)(1) ]))
+tallWalls = T(3)(-2.5)(PROD([ tallWalls, INTERVALS(6.5)(1) ]))
 
 """ Creazione colonne piccole """
+def createColumns(repetitions, distance, scale):
+	tx,ty = distance
+	P,FP = larCuboids([1,1])
+	P,EP = larCuboidsFacets([P,FP])
+	P = (mat(P)*scale).tolist()
+	O=P;EO=EP;FO=FP
+	for i in range(repetitions - 1):
+		X = (mat(P) + [ tx*(i+1) ,0 ]).tolist()
+		EX = [SUM([EP[z],[4*(i+1),4*(i+1)]]) for z in range(len(EP))]
+		FX = [[FP[0][u]+(4*(i+1)) for u in range(4)]]
+		O = O+X
+		EO = EO+EX
+		FO = FO+FX
+	P=O;EP=EO;FP=FO
+	for i in range(repetitions - 1):
+		X = (mat(O)+ [0, ty*(i+1)]).tolist()
+		P=P+X
+		EX = [SUM([EO[z],[48*(i+1),48*(i+1)]]) for z in range(len(EO))]
+		EP=EP+EX
+		FX = [[FP[w][u]+(48*(i+1)) for u in range(4)] for w in range(len(FO))]
+		FP=FP+FX
+	return P,FP,EP
+	
 C,FC = larCuboids([1,1])
 C = ((mat(C)*.5)+ [(V[367][0]+1.4),7.4]).tolist()
 columns = PROD([ STRUCT(MKPOLS((C,FC))), INTERVALS(4)(1) ])
@@ -216,7 +236,8 @@ W = ((mat(W) - W[1])*108).tolist()
 
 floors = (W,[FW[k] for k in range(len(FW)) if k!=5 and k!=4])
 lower_floors = DIFFERENCE([STRUCT(MKPOLS([W,FW])),STRUCT(MKPOLS(floors))])
-lower_floors = T(3)(-2)(PROD([ (lower_floors), INTERVALS(.3)(1) ]))
-b = OFFSET([.3,.3])(STRUCT(MKPOLS((W,[EW[5],EW[15]])))) ##muri sotto le scale
-b = T(3)(-2)(PROD([b, INTERVALS(2)(1) ]))
-regular_floors = PROD([STRUCT(MKPOLS(floors)), INTERVALS(.3)(1) ])
+lower_floors = T(3)(-2.5)(PROD([ (lower_floors), INTERVALS(.1)(1) ]))
+muri_dietro_scale = OFFSET([.3,0])(STRUCT(MKPOLS((W,[EW[5],EW[15]])))) ##muri sotto le scale
+muri_dietro_scale = T(3)(-2.5)(PROD([muri_dietro_scale, INTERVALS(2.5)(1) ]))
+regular_floors = PROD([STRUCT(MKPOLS(floors)), INTERVALS(.1)(1) ])
+VIEW(STRUCT([regular_floors,lower_floors,muri_dietro_scale]))
