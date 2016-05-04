@@ -164,7 +164,7 @@ submodel = STRUCT(MKPOLS((V,EV)))
 """ Separazione tipi di muro """
 #TODO: separazione spigoli
 tallWallsEdges = [227,91,380,9,268,391,326,241,262,103,128,214,313,187,244,312,73,179,165]
-wallsEdges = set(range(len(EV))).difference(tallWallsEdges)
+wallsEdges = set(range(len(EV))).difference(tallWallsEdges+[96]) #96 è lo spigolo che devo sostituire con la vetrata
 
 tallWallsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in tallWallsEdges]))
 wallsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in wallsEdges]))
@@ -177,11 +177,12 @@ tallWalls = COLOR(CYAN)(OFFSET([.5,.5])(tallWallsHPCs))
 """ Estrusione mura """
 semint = PROD([ semint, INTERVALS(4)(1) ])
 tallWalls = T(3)(-2.5)(PROD([ tallWalls, INTERVALS(6.5)(1) ]))
+basementWalls = STRUCT([semint,tallWalls])
 
 """ Creazione colonne piccole """
-def createColumns(repetitions, distance, scale):
-	tx,ty = distance
-	rx,ry = repetitions
+def createColumns(repetitionsXY, traslationXY, scale):
+	tx,ty = traslationXY
+	rx,ry = repetitionsXY
 	P,FP = larCuboids([1,1])
 	P,EP = larCuboidsFacets([P,FP])
 	P = (mat(P)*scale).tolist()
@@ -247,7 +248,23 @@ W = ((mat(W) - W[1])*108).tolist()
 floors = (W,[FW[k] for k in range(len(FW)) if k!=5 and k!=4])
 lower_floors = DIFFERENCE([STRUCT(MKPOLS([W,FW])),STRUCT(MKPOLS(floors))])
 lower_floors = T(3)(-2.5)(PROD([ (lower_floors), INTERVALS(.1)(1) ]))
-muri_dietro_scale = OFFSET([.3,0])(STRUCT(MKPOLS((W,[EW[5],EW[15]])))) ##muri sotto le scale
+muri_dietro_scale = OFFSET([.3,0])(STRUCT(MKPOLS((W,[EW[5],EW[15]])))) ##muri dietro le scale
 muri_dietro_scale = T(3)(-2.5)(PROD([muri_dietro_scale, INTERVALS(2.5)(1) ]))
 regular_floors = PROD([STRUCT(MKPOLS(floors)), INTERVALS(.1)(1) ])
-VIEW(STRUCT([regular_floors,lower_floors,muri_dietro_scale]))
+basementFloors = STRUCT([regular_floors,lower_floors,muri_dietro_scale])
+
+""" Costruzione telaio e vetrata seminterrato """
+lines = lines2lines("telaio-semint.lines")
+P,FP,EP,polygons = larFromLines(lines)
+#VIEW(larModelNumbering(1,1,1)(P,[AA(LIST)(range(len(P))),EP,FP],STRUCT(MKPOLS((P,EP))),0.1))
+P = (mat(P)-P[71]).tolist()
+sx = 93.4328/P[2][0]; sy = 3.75/P[2][1]
+scaling = mat([[sx,0,0],[0,sy,0]])
+P = ( mat(P)*scaling ).tolist()
+
+glassWallsHPC = STRUCT(MKPOLS((P,FP)))
+glassWalls = T(3)(0.11)(OFFSET([0.0,0.0,0.03])(glassWallsHPC))
+frame = OFFSET([.2,.25,.25])(STRUCT(MKPOLS([P,EP])))
+frameAndWindows = R([2,3])(PI/2)(STRUCT([COLOR(GRAY)(frame),glassWalls]))
+frameAndWindows = T([1,2])([20.4,94.1328])(R([1,2])(-PI/2)(frameAndWindows))
+VIEW(STRUCT([basementFloors,frameAndWindows,basementWalls,colonneG,colonneP]))
