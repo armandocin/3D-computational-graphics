@@ -149,7 +149,7 @@ pianoterra = STRUCT([pillarsE,panelsE, telaio, ductsE, stairsE,roof])
 VIEW(pianoterra)
 
 """ Creazione mura seminterrato """
-filename = "seminterrato.lines"
+filename = "mura-semint.lines"
 lines_ps = lines2lines(filename)
 V,EV = lines2lar(lines_ps) ##creo Vertici e Spigoli del piano terra
 VV = AA(LIST)(range(len(V)))
@@ -157,27 +157,43 @@ submodel = STRUCT(MKPOLS((V,EV)))
 ##VIEW(larModelNumbering(1,1,1)(V,[VV,EV],submodel,0.04))
 
 """ Traslazione nell'origine e scalamento """
-V = ((mat(V) - V[355])*108).tolist()
+V = ((mat(V) - V[299])*108).tolist()
 submodel = STRUCT(MKPOLS((V,EV)))
 ##VIEW(larModelNumbering(1,1,1)(V,[VV,EV],submodel,5))
 
+""" Creazioni pannelli seminterrato """
+filename = "pannelli-semint.lines"
+lines_ps = lines2lines(filename)
+U,EU = lines2lar(lines_ps) ##creo Vertici e Spigoli del piano terra
+UU = AA(LIST)(range(len(U)))
+submodel = STRUCT(MKPOLS((U,EU)))
+##VIEW(larModelNumbering(1,1,1)(U,[UU,EU],submodel,0.04))
+assert U[45][0] - U[57][0] == 0.1061
+U = ((mat(U) - U[57])*(8.7372/0.1061)).tolist()
+U = (mat(U) + [23.6088, 21.481199999999998]).tolist()
+basementPanels =  COLOR(YELLOW)(OFFSET([.2,.2])(STRUCT(MKPOLS([U,EU]))))
+basementPanels = PROD([ basementPanels, INTERVALS(3)(1) ])
+
 """ Separazione tipi di muro """
 #TODO: separazione spigoli
-tallWallsEdges = [227,91,380,9,268,391,326,241,262,103,128,214,313,187,244,312,73,179,165]
-wallsEdges = set(range(len(EV))).difference(tallWallsEdges+[96]) #96 è lo spigolo che devo sostituire con la vetrata
+tallWallsEdges = [254,95,140,265,151,7,42,292,274,167,117,244,153,323,296,99,284,271,213,133,315,31]
+thickWallsEdges = [134,98,138,58,14,23,175,37,306,142,162,145,260,233,21,236,191,65,108,74,83,12,160,41,169,203,280,18,245,222,27,131,239,127,78,55,310,120,320,261,10,157,132,47,43,221,154,252,46,0,49,170,130,90,29,228]
+wallsEdges = set(range(len(EV))).difference(tallWallsEdges+[328]+thickWallsEdges) #328 è lo spigolo che devo sostituire con la vetrata
 
 tallWallsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in tallWallsEdges]))
+thickWallsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in thickWallsEdges]))
 wallsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in wallsEdges]))
 
 """ Faccio l'OFFSET """
-#semint = OFFSET([.5,.5])(STRUCT(MKPOLS((V,EV))))
-semint = OFFSET([.5,.5])(wallsHPCs)
+walls = OFFSET([.3,.3])(wallsHPCs)
 tallWalls = COLOR(CYAN)(OFFSET([.5,.5])(tallWallsHPCs))
+thickWalls = COLOR(GREEN)(OFFSET([.5,.5])(thickWallsHPCs))
 
 """ Estrusione mura """
-semint = PROD([ semint, INTERVALS(4)(1) ])
+walls = PROD([ walls, INTERVALS(4)(1) ])
 tallWalls = T(3)(-2.5)(PROD([ tallWalls, INTERVALS(6.5)(1) ]))
-basementWalls = STRUCT([semint,tallWalls])
+thickWalls = PROD([ thickWalls, INTERVALS(4)(1) ])
+basementWalls = STRUCT([walls, thickWalls, basementPanels,tallWalls])
 
 """ Creazione colonne piccole """
 def createColumns(repetitionsXY, traslationXY, scale):
@@ -198,21 +214,21 @@ def createColumns(repetitionsXY, traslationXY, scale):
 	for i in range(ry - 1):
 		X = (mat(O)+ [0, ty*(i+1)]).tolist()
 		P=P+X
-		EX = [SUM([EO[z],[48*(i+1),48*(i+1)]]) for z in range(len(EO))]
+		EX = [SUM([EO[z],[(4*rx)*(i+1),(4*rx)*(i+1)]]) for z in range(len(EO))]
 		EP=EP+EX
-		FX = [[FP[w][u]+(48*(i+1)) for u in range(4)] for w in range(len(FO))]
+		FX = [[FP[w][u]+((4*rx)*(i+1)) for u in range(4)] for w in range(len(FO))]
 		FP=FP+FX
 	return P,FP,EP
 
 C,FC,EC = createColumns([12,12],[7.2,7.2],.5)
-C = (mat(C)+ [(V[367][0]+1.4),7.4]).tolist()
+C = (mat(C)+ [(V[309][0]+1.4),7.4]).tolist()
 #CC = AA(LIST)(range(len(C)))
 #VIEW(larModelNumbering(1,1,1)(C,[CC,EC,FC],STRUCT(MKPOLS((C,EC))),0.1))
 tallColumns = (C,[FC[k] for k in [112,113,124,125,40,41,52,53]])
 regularColumns = (C, [FC[k] for k in set(range(len(FC))).difference([112,113,124,125,40,41,52,53])])
 tallColumnsHPCs = T(3)(-2.4)(PROD([ STRUCT(MKPOLS(tallColumns)), INTERVALS(6.5)(1) ]))
 regularColumnsHPCs = PROD([ STRUCT(MKPOLS(regularColumns)), INTERVALS(4)(1) ])
-colonneP = STRUCT([regularColumnsHPCs,tallColumnsHPCs])
+smallColumns = STRUCT([regularColumnsHPCs,tallColumnsHPCs])
 #C,FC = larCuboids([1,1])
 #C = ((mat(C)*.5)+ [(V[367][0]+1.4),7.4]).tolist()
 #columns = PROD([ STRUCT(MKPOLS((C,FC))), INTERVALS(4)(1) ])
@@ -224,18 +240,18 @@ colonneP = STRUCT([regularColumnsHPCs,tallColumnsHPCs])
 C,FC = larCuboids([1,1])
 C = (mat(C)+ [61.1,21.1216]).tolist()
 columnsBV = [C,FC]
-colonneGV = STRUCT(NN(2)([STRUCT(MKPOLS(columnsBV)),T(1)(28.8)]))
-colonneGV = STRUCT(NN(2)([colonneGV,T(2)(64.8)]))
+bigColumnsVertical = STRUCT(NN(2)([STRUCT(MKPOLS(columnsBV)),T(1)(28.8)]))
+bigColumnsVertical = STRUCT(NN(2)([bigColumnsVertical,T(2)(64.8)]))
 #colonne grandi orizontali
 C,FC = larCuboids([1,1])
 C = (mat(C)+ [43.1,39.1216]).tolist()
 columnsBO = [C,FC]
-colonneGO = STRUCT(NN(2)([STRUCT(MKPOLS(columnsBO)),T(2)(28.8)]))
-colonneGO = STRUCT(NN(2)([colonneGO,T(1)(64.8)]))
+bigColumnsOriz = STRUCT(NN(2)([STRUCT(MKPOLS(columnsBO)),T(2)(28.8)]))
+bigColumnsOriz = STRUCT(NN(2)([bigColumnsOriz,T(1)(64.8)]))
 
-colonneGV = PROD([ colonneGV, INTERVALS(4)(1) ])
-colonneGO = PROD([ colonneGO, INTERVALS(4)(1) ])
-colonneG = STRUCT([colonneGO,colonneGV])
+bigColumnsVertical = PROD([ bigColumnsVertical, INTERVALS(4)(1) ])
+bigColumnsOriz = PROD([ bigColumnsOriz, INTERVALS(4)(1) ])
+bigColumns = STRUCT([bigColumnsOriz,bigColumnsVertical])
 
 """ Pavimento del Seminterrato """
 lines = lines2lines("pavimento-semint.lines")
@@ -267,4 +283,4 @@ glassWalls = T(3)(0.11)(OFFSET([0.0,0.0,0.03])(glassWallsHPC))
 frame = OFFSET([.2,.25,.25])(STRUCT(MKPOLS([P,EP])))
 frameAndWindows = R([2,3])(PI/2)(STRUCT([COLOR(GRAY)(frame),glassWalls]))
 frameAndWindows = T([1,2])([20.4,94.1328])(R([1,2])(-PI/2)(frameAndWindows))
-VIEW(STRUCT([basementFloors,frameAndWindows,basementWalls,colonneG,colonneP]))
+VIEW(STRUCT([basementFloors,frameAndWindows,basementWalls,bigColumns,smallColumns]))
