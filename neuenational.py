@@ -3,25 +3,17 @@
 from larlib import *
 
 """ Costruzione della struttra di travi del tetto tramite pyplasm """
-Y,FY = larCuboids([18,18])
-Y,EY = larCuboidsFacets([Y,FY])
-Y=(mat(Y)*3.577).tolist()
-Y=(mat(Y)+[.107,.107]).tolist()
-#VIEW(STRUCT(MKPOLS([Y,EY])))
-beamsGrid = OFFSET([.25,.25])(STRUCT(MKPOLS([Y,EY])))
-beamsHPC = PROD([ STRUCT([beamsGrid]), INTERVALS(1.8)(1) ])
-beamsHPC = T(3)(8.65)(beamsHPC)
-#VIEW(beamsHPC)
-
-""" travi sottili """
-U,FU = larCuboids([18,18])
-U,EU = larCuboidsFacets([U,FU])
-U=(mat(U)*3.597).tolist()
-boundaryEdges = boundaryCells(FU,EU)
-EU = [EU[i] for i in set(range(len(EU))).difference(boundaryEdges)]
-thinGrid = OFFSET([.1,.1])(STRUCT(MKPOLS([U,EU])))
-thin = COLOR(GRAY)(PROD([ STRUCT([thinGrid]), INTERVALS(1.8)(1) ]))
-thin = T(3)(8.65)(thin)
+V=[[0,0],[0,64.85]]
+EV = [[0,1]]
+basetrave = OFFSET([.5,0])(STRUCT(MKPOLS([V,EV])))
+#VIEW(basetrave)
+basetrave = STRUCT(NN(2)([PROD([OFFSET([.5,0])(STRUCT(MKPOLS([V,EV]))),INTERVALS(.05)(1)]),T(3)(1.8)]))
+centrotrave = T(1)(.2)(PROD([OFFSET([.1,0])(STRUCT(MKPOLS([V,EV]))),INTERVALS(1.8)(1)]))
+#VIEW(STRUCT([basetrave,centrotrave]))
+trave = STRUCT([basetrave,centrotrave])
+traviX = STRUCT(NN(19)([trave,T(1)(3.575)]))
+traviY = T(1)(64.85)(R([1,2])(PI/2)(traviX))
+beams = T(3)(8.6)(STRUCT([traviY,traviX]))
 
 """ Costruzione della copertura del tetto """
 C,FC = larCuboids([1,1])
@@ -32,14 +24,6 @@ CT = (mat(C)+[0,0,10.45]).tolist() ##lo traslo di 10.25 ovvero 8.4 delle mura + 
 coverHPC = COLOR(GRAY)(STRUCT(MKPOLS([CT,FC])))
 #VIEW(coverHPC)
 #VIEW(STRUCT([coverHPC,beamsHPC]))
-
-""" Costruzione della base del tetto """
-B,FB = larCuboids([18,18])
-B,EB = larCuboidsFacets([B,FB])
-B = (mat(B)*3.575).tolist()
-roofBase = OFFSET([.5,.5])(STRUCT(MKPOLS([B,EB])))
-roofBaseHPC = COLOR(GRAY)(PROD([ STRUCT([roofBase]), INTERVALS(.05)(1) ]))
-roofBaseHPC = T(3)(8.6)(roofBaseHPC) ##8.4 + l'offset su y del telaio
 
 """ griglia interna """
 V,FV = larCuboids([8,8])
@@ -54,7 +38,7 @@ grid = STRUCT(NN(14)([smallGrid,T(1)((8*.416)+.25)]))
 grid = STRUCT(NN(14)([grid,T(2)((8*.416)+.25)]))
 ##VIEW(grid)
 
-roof = STRUCT([roofBaseHPC,coverHPC,beamsHPC,thin,grid])
+roof = STRUCT([beams,coverHPC,grid])
 
 """ Mura Pianoterra """
 
@@ -189,14 +173,14 @@ walls = OFFSET([.3,.3])(wallsHPCs)
 tallWalls = COLOR(CYAN)(OFFSET([.5,.5])(tallWallsHPCs))
 thickWalls = COLOR(GREEN)(OFFSET([.5,.5])(thickWallsHPCs))
 
-""" Estrusione mura """
+""" Estrusione muri """
 walls = PROD([ walls, INTERVALS(4)(1) ])
 tallWalls = T(3)(-2.5)(PROD([ tallWalls, INTERVALS(6.5)(1) ]))
 thickWalls = PROD([ thickWalls, INTERVALS(4)(1) ])
 basementWalls = STRUCT([walls, thickWalls, basementPanels,tallWalls])
 
 """ Creazione colonne piccole """
-def createColumns(repetitionsXY, traslationXY, scale):
+def createColumns(repetitionsXY, traslationXY, scale=1):
 	tx,ty = traslationXY
 	rx,ry = repetitionsXY
 	P,FP = larCuboids([1,1])
@@ -283,4 +267,5 @@ glassWalls = T(3)(0.11)(OFFSET([0.0,0.0,0.03])(glassWallsHPC))
 frame = OFFSET([.2,.25,.25])(STRUCT(MKPOLS([P,EP])))
 frameAndWindows = R([2,3])(PI/2)(STRUCT([COLOR(GRAY)(frame),glassWalls]))
 frameAndWindows = T([1,2])([20.4,94.1328])(R([1,2])(-PI/2)(frameAndWindows))
+
 VIEW(STRUCT([basementFloors,frameAndWindows,basementWalls,bigColumns,smallColumns]))
