@@ -269,3 +269,18 @@ frameAndWindows = R([2,3])(PI/2)(STRUCT([COLOR(GRAY)(frame),glassWalls]))
 frameAndWindows = T([1,2])([20.4,94.1328])(R([1,2])(-PI/2)(frameAndWindows))
 
 VIEW(STRUCT([basementFloors,frameAndWindows,basementWalls,bigColumns,smallColumns]))
+
+""" Costruzione pavimento podio/tetto seminterrato """
+lines = lines2lines("tetto-semint.lines")
+U,FU,EU,poly = larFromLines(lines)
+#VIEW(larModelNumbering(1,1,1)(U,[AA(LIST)(range(len(U))),EU,FU],STRUCT(MKPOLS((U,EU))),5))
+
+U = (mat(U)-U[10]).tolist()
+U = ((mat(U)*(94.1328/U[9][1]))+ [20, 0.0]).tolist()
+
+staircase1 = (U,[FU[k] for k in range(9)])
+difference = DIFFERENCE([STRUCT(MKPOLS((U,FU))), STRUCT(MKPOLS(staircase1))])
+VIEW(EXPLODE(1.2,1.2,1.2)(MKPOLS(staircase1)))
+
+upFloor = OFFSET([.3,.3])(difference)
+upFloor = T(3)(4)(PROD([upFloor, INTERVALS(2)(1)]))
