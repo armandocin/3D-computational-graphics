@@ -161,7 +161,7 @@ basementPanels = PROD([ basementPanels, INTERVALS(3)(1) ])
 """ Separazione tipi di muro """
 #TODO: separazione spigoli
 tallWallsEdges = [254,95,140,265,151,7,42,292,274,167,117,244,153,323,296,99,284,271,213,133,315,31]
-thickWallsEdges = [134,98,138,58,14,23,175,37,306,142,162,145,260,233,21,236,191,65,108,74,83,12,160,41,169,203,280,18,245,222,27,131,239,127,78,55,310,120,320,261,10,157,132,47,43,221,154,252,46,0,49,170,130,90,29,228]
+thickWallsEdges = [66,86,17,134,98,138,58,14,23,175,37,306,142,162,145,260,233,21,236,191,65,108,74,83,12,160,41,169,203,280,18,245,222,27,131,239,127,78,55,310,120,320,261,10,157,132,47,43,221,154,252,46,0,49,170,130,90,29,228]
 wallsEdges = set(range(len(EV))).difference(tallWallsEdges+[328]+thickWallsEdges) #328 è lo spigolo che devo sostituire con la vetrata
 
 tallWallsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in tallWallsEdges]))
@@ -279,8 +279,42 @@ U = (mat(U)-U[10]).tolist()
 U = ((mat(U)*(94.1328/U[9][1]))+ [20, 0.0]).tolist()
 
 staircase1 = (U,[FU[k] for k in range(9)])
-difference = DIFFERENCE([STRUCT(MKPOLS((U,FU))), STRUCT(MKPOLS(staircase1))])
-VIEW(EXPLODE(1.2,1.2,1.2)(MKPOLS(staircase1)))
+upFloorHPC = DIFFERENCE([STRUCT(MKPOLS((U,FU))), STRUCT(MKPOLS(staircase1))])
+#VIEW(EXPLODE(1.2,1.2,1.2)(MKPOLS(staircase1)))
 
-upFloor = OFFSET([.3,.3])(difference)
-upFloor = T(3)(4)(PROD([upFloor, INTERVALS(2)(1)]))
+upFloor = OFFSET([.3,.3])(upFloorHPC)
+upFloor = T(3)(4)(PROD([upFloor, INTERVALS(1.5)(1)]))
+
+W,FW = staircase1
+
+stairsmodel = SKEL_1(STRUCT(MKPOLS((W,FW))))
+VIEW(larModelNumbering(1,1,1)(W,[AA(LIST)(range(len(W))),FW],stairsmodel,2))
+FW = sorted(FW,key=lambda cell: CCOMB([W[k] for k in cell])[0]) #Riordino le facce delle scale
+stairsmodel = SKEL_1(STRUCT(MKPOLS((W,FW))))
+VIEW(larModelNumbering(1,1,1)(W,[AA(LIST)(range(len(W))),FW],stairsmodel,2))
+"""
+staircase1struct = Struct([([W[k] for k in cell],[range(len(cell))]) for cell in [FW[i] for i in range(8)]]) 
+scalinata1 = embedStruct(1)(staircase1struct)
+staircase1 = CAT(DISTL([t(0,0,-(2*0.16)),scalinata1.body]))
+staircase1 = struct2lar(Struct(staircase1))
+VIEW(STRUCT(MKPOLS(staircase1)))
+lastStep = (W,[FW[8]])
+lastStep = T(3)(-1.5)(PROD([STRUCT(MKPOLS(lastStep)), INTERVALS(0.06)(1)]))
+staircase1 = larModelProduct([staircase1,larQuote1D([0.16])])
+"""
+step = OFFSET([.0375,0])(STRUCT(MKPOLS((W,[FW[0]]))))
+step = T(3)(5.32)(PROD([step,INTERVALS(.18)(1)]))
+steps = STRUCT(NN(8)([ step, T([1,3])([1.0755,-0.18]) ]))
+lastStep = OFFSET([.3,0])(STRUCT(MKPOLS((W,[FW[8]]))))
+lastStep = T(3)(4)(PROD([lastStep, INTERVALS(0.06)(1)]))
+staircase1 = STRUCT([lastStep,steps])
+
+""" Creazione cornicione del podio """
+lines = lines2lines("cornicione.lines")
+Z,EZ = lines2lar(lines)
+#VIEW(larModelNumbering(1,1,1)(Z,[AA(LIST)(range(len(Z))),EZ,FZ],STRUCT(MKPOLS((Z,EZ))),5))
+Z = (mat(Z)-Z[19]).tolist()
+Z = ((mat(Z)*(94.1328/Z[17][1]))+ [19.8, -.2]).tolist()
+
+cornicione = OFFSET([.2,.2])(STRUCT(MKPOLS((Z,EZ))))
+cornicione = T(3)(5.5)(PROD([cornicione, INTERVALS(.5)(1)]))
