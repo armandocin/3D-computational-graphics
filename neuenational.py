@@ -83,6 +83,9 @@ panelsE = PROD([ panels, INTERVALS(4.4)(1) ]) ###mettere altezza reale pannelli
 wallsE = PROD([ walls, INTERVALS(8.4)(1) ])
 ##VIEW(STRUCT([pillarsE,panelsE, wallsE, ductsE, stairsE]))
 
+c = CYLINDER([.2,.15])(100)
+c1 = T(3)(.15)(CYLINDER([.3,.05])(100))
+
 """ Costruzione del telaio """
 lines = lines2lines("telaiopt.lines")
 H,FH,EH,poly = larFromLines(lines)
@@ -129,8 +132,8 @@ telaio = STRUCT([telaioN,telaioE,telaioO,telaioS])
 telaio = T([1,2])(SUM([[7.132334158738434, 7.237221425778705],[0,.25]]))(telaio) ##V[30]= [7.132334158738434, 7.237221425778705] (v30 e' il vertice in basso a sinistra delle mura)
 
 """Visualizzazione Pianoterra completo"""
-pianoterra = T([1,2,3])([43.5,22,5.5])(STRUCT([pillarsE,panelsE, telaio, ductsE, stairsE,roof]))
-VIEW(pianoterra)
+pianoterra = T([1,2,3])([43.5,21.7,5.5])(STRUCT([pillarsE,panelsE, telaio, ductsE, stairsE,roof]))
+#VIEW(pianoterra)
 
 """ Creazione mura seminterrato """
 filename = "mura-semint.lines"
@@ -145,24 +148,11 @@ V = ((mat(V) - V[299])*108).tolist()
 submodel = STRUCT(MKPOLS((V,EV)))
 ##VIEW(larModelNumbering(1,1,1)(V,[VV,EV],submodel,5))
 
-""" Creazioni pannelli seminterrato """
-filename = "pannelli-semint.lines"
-lines_ps = lines2lines(filename)
-U,EU = lines2lar(lines_ps) ##creo Vertici e Spigoli del piano terra
-UU = AA(LIST)(range(len(U)))
-submodel = STRUCT(MKPOLS((U,EU)))
-##VIEW(larModelNumbering(1,1,1)(U,[UU,EU],submodel,0.04))
-assert U[45][0] - U[57][0] == 0.1061
-U = ((mat(U) - U[57])*(8.7372/0.1061)).tolist()
-U = (mat(U) + [23.6088, 21.481199999999998]).tolist()
-basementPanels =  COLOR(YELLOW)(OFFSET([.2,.2])(STRUCT(MKPOLS([U,EU]))))
-basementPanels = PROD([ basementPanels, INTERVALS(3)(1) ])
-
 """ Separazione tipi di muro """
 #TODO: separazione spigoli
 tallWallsEdges = [254,95,140,265,151,7,42,292,274,167,117,244,153,323,296,99,284,271,213,133,315,31]
 thickWallsEdges = [66,86,17,134,98,138,58,14,23,175,37,306,142,162,145,260,233,21,236,191,65,108,74,83,12,160,41,169,203,280,18,245,222,27,131,239,127,78,55,310,120,320,261,10,157,132,47,43,221,154,252,46,0,49,170,130,90,29,228]
-wallsEdges = set(range(len(EV))).difference(tallWallsEdges+[328]+thickWallsEdges) #328 è lo spigolo che devo sostituire con la vetrata
+wallsEdges = set(range(len(EV))).difference(tallWallsEdges+[328]+thickWallsEdges) #328 spigolo che devo sostituire con la vetrata
 
 tallWallsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in tallWallsEdges]))
 thickWallsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in thickWallsEdges]))
@@ -177,6 +167,20 @@ thickWalls = COLOR(GREEN)(OFFSET([.5,.5])(thickWallsHPCs))
 walls = PROD([ walls, INTERVALS(4)(1) ])
 tallWalls = T(3)(-2.5)(PROD([ tallWalls, INTERVALS(6.5)(1) ]))
 thickWalls = PROD([ thickWalls, INTERVALS(4)(1) ])
+
+""" Creazioni pannelli seminterrato """
+filename = "pannelli-semint.lines"
+lines_ps = lines2lines(filename)
+U,EU = lines2lar(lines_ps) ##creo Vertici e Spigoli del piano terra
+UU = AA(LIST)(range(len(U)))
+submodel = STRUCT(MKPOLS((U,EU)))
+##VIEW(larModelNumbering(1,1,1)(U,[UU,EU],submodel,0.04))
+assert U[45][0] - U[57][0] == 0.1061
+U = ((mat(U) - U[57])*(8.7372/0.1061)).tolist()
+U = (mat(U) + [23.6088, 21.481199999999998]).tolist()
+basementPanels =  COLOR(YELLOW)(OFFSET([.2,.2])(STRUCT(MKPOLS([U,EU]))))
+basementPanels = PROD([ basementPanels, INTERVALS(3)(1) ])
+
 basementWalls = STRUCT([walls, thickWalls, basementPanels,tallWalls])
 
 """ Creazione colonne piccole """
@@ -231,7 +235,7 @@ C,FC = larCuboids([1,1])
 C = (mat(C)+ [43.1,39.1216]).tolist()
 columnsBO = [C,FC]
 bigColumnsOriz = STRUCT(NN(2)([STRUCT(MKPOLS(columnsBO)),T(2)(28.8)]))
-bigColumnsOriz = STRUCT(NN(2)([bigColumnsOriz,T(1)(64.8)]))
+bigColumnsOriz = STRUCT(NN(2)([bigColumnsOriz,T(1)(64.3)]))
 
 bigColumnsVertical = PROD([ bigColumnsVertical, INTERVALS(4)(1) ])
 bigColumnsOriz = PROD([ bigColumnsOriz, INTERVALS(4)(1) ])
