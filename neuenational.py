@@ -129,7 +129,7 @@ telaio = STRUCT([telaioN,telaioE,telaioO,telaioS])
 telaio = T([1,2])(SUM([[7.132334158738434, 7.237221425778705],[0,.25]]))(telaio) ##V[30]= [7.132334158738434, 7.237221425778705] (v30 e' il vertice in basso a sinistra delle mura)
 
 """Visualizzazione Pianoterra completo"""
-pianoterra = STRUCT([pillarsE,panelsE, telaio, ductsE, stairsE,roof])
+pianoterra = T([1,2,3])([43.5,22,5.5])(STRUCT([pillarsE,panelsE, telaio, ductsE, stairsE,roof]))
 VIEW(pianoterra)
 
 """ Creazione mura seminterrato """
@@ -268,7 +268,8 @@ frame = OFFSET([.2,.25,.25])(STRUCT(MKPOLS([P,EP])))
 frameAndWindows = R([2,3])(PI/2)(STRUCT([COLOR(GRAY)(frame),glassWalls]))
 frameAndWindows = T([1,2])([20.4,94.1328])(R([1,2])(-PI/2)(frameAndWindows))
 
-VIEW(STRUCT([basementFloors,frameAndWindows,basementWalls,bigColumns,smallColumns]))
+seminterrato = STRUCT([basementFloors,frameAndWindows,basementWalls,bigColumns,smallColumns])
+#VIEW(STRUCT([basementFloors,frameAndWindows,basementWalls,bigColumns,smallColumns]))
 
 """ Costruzione pavimento podio/tetto seminterrato """
 lines = lines2lines("tetto-semint.lines")
@@ -307,7 +308,16 @@ step = T(3)(5.32)(PROD([step,INTERVALS(.18)(1)]))
 steps = STRUCT(NN(8)([ step, T([1,3])([1.0755,-0.18]) ]))
 lastStep = OFFSET([.3,0])(STRUCT(MKPOLS((W,[FW[8]]))))
 lastStep = T(3)(4)(PROD([lastStep, INTERVALS(0.06)(1)]))
-staircase1 = STRUCT([lastStep,steps])
+
+sx = U[4][0]-U[7][0]
+sy = U[7][1]-U[8][1]
+tri = SIMPLEX(2)
+rampa = T(2)(1)(R([2,3])(PI/2)(PROD([tri,INTERVALS(1)(1)])))
+rampa = S([1,2,3])([sx,sy,1.5])(rampa)
+rampa = T([1,2,3])([U[8][0],U[8][1],4])(rampa)
+staircase1 = STRUCT([lastStep,steps,rampa])
+
+VIEW(STRUCT([basementFloors,frameAndWindows,basementWalls,bigColumns,smallColumns, staircase1,upFloor]))
 
 """ Creazione cornicione del podio """
 lines = lines2lines("cornicione.lines")
