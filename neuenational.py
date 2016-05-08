@@ -51,7 +51,7 @@ submodel = STRUCT(MKPOLS((V,EV)))
 
 """ trasform1azione di scala """
 assert EV[32] == (30,69) ##spigolo di un muro del pianoterra. 30 e 69 sono i vertici
-assert V[30],V[69] == ([7.146513749511273, 7.251609539945262], [57.54651374951127, 7.251609539945262])
+assert V[30],V[69] == ([0.1155, 0.1169], [0.8828, 0.1169])
 V = ((mat(V) - [V[111][0],V[46][1]]) * (50.3/(V[69][0]-V[30][0]))).tolist() ##voglio allineare i pilastri in modo corretto e i vertici 8 e 4 sono quelli che prendo per trovare il vettore di traslazione su x e y
 
 """ Divido i muri di altezza diversa """
@@ -61,14 +61,22 @@ ductsEdges = [91,25,78,126,24,26,95,89] ##spigoli dei condotti dell'aria
 panelsEdges = [63,10,47,40,58,131,9,17,75,142,132,59,129,114,12,94,33,104,151,46,39,14,134,64,77,147] ##spigoli dei pannelli
 wallsEdges = [32,61,106,45]
 pillarsEdges = set(range(len(EV))).difference(panelsEdges+ductsEdges+stairsEdges+wallsEdges)
+#pt = (V,[EV[k] for k in panelsEdges+ductsEdges+stairsEdges+wallsEdges])
+
+""" pilastri """
+lines = lines2lines("pilastri.lines")
+P,EP = lines2lar(lines)
+#VIEW(larModelNumbering(1,1,1)(P,[AA(LIST)(range(len(P))),EP],STRUCT(MKPOLS((P,EP))),0.01))
+P = ((mat(P) - [P[18][0],P[48][1]])*(50.3/(0.8828-0.1155))).tolist()
 
 """ Faccio l'OFFSET """
-pillarsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in pillarsEdges]))
+#pillarsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in pillarsEdges]))
+pillarsHPCs = STRUCT(MKPOLS((P,EP)))
 stairsHPCs = STRUCT(AA(POLYLINE)(lines_stairs))
 ductsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in ductsEdges]))
 panelsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in panelsEdges]))
 wallsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in wallsEdges]))
-pillars = COLOR(BLACK)(OFFSET([.25,.25])(pillarsHPCs))
+pillars = COLOR(BLACK)(OFFSET([.05,.05])(pillarsHPCs))
 stairs = COLOR(RED)(OFFSET([.025,.025])(stairsHPCs))
 ducts = COLOR(GREEN)(OFFSET([.5,.5])(ductsHPCs))
 panels = COLOR(YELLOW)(OFFSET([.25,.25])(panelsHPCs))
