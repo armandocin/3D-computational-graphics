@@ -67,7 +67,7 @@ pillarsEdges = set(range(len(EV))).difference(panelsEdges+ductsEdges+stairsEdges
 lines = lines2lines("pilastri.lines")
 P,EP = lines2lar(lines)
 #VIEW(larModelNumbering(1,1,1)(P,[AA(LIST)(range(len(P))),EP],STRUCT(MKPOLS((P,EP))),0.01))
-P = ((mat(P) - [P[18][0],P[48][1]])*(50.3/(0.8828-0.1155))).tolist()
+P = ((mat(P) - [P[56][0],P[57][1]])*(50.3/(0.8828-0.1155))).tolist()
 
 """ Faccio l'OFFSET """
 #pillarsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in pillarsEdges]))
@@ -107,7 +107,7 @@ cyl3 = CYLINDER([.22,.07])(100)
 cyl = STRUCT([cyl1,cyl2,cyl3])
 cyl = T([1,2,3])([1.1570376645379952/2,0.38021634302098306/2,.05])(cyl)
 top = STRUCT([cyl,cross])
-tops = STRUCT([T([1,2])(P[k])(top) for k in [34,54,9,96,60,99,37,91]])
+tops = STRUCT([T([1,2])(P[k])(top) for k in [57,85,53,79,44,92,101,69]])
 tops = T(3)(8.35)(tops)
 pillarsE = STRUCT([tops, pillarsE])
 
