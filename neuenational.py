@@ -304,12 +304,16 @@ U,FU,EU,poly = larFromLines(lines)
 
 U = (mat(U)-U[20]).tolist()
 U = ((mat(U)*(94.6328/U[23][1]))+ [20, 0.0]).tolist()
+
+basementCeiling = T(3)(4)(PROD([STRUCT(MKPOLS((U,FU))), INTERVALS(0.15)(1)]))
+
 staircase1 = (U,[FU[k] for k in range(11)])
 upFloorHPC = DIFFERENCE([STRUCT(MKPOLS((U,FU))), STRUCT(MKPOLS(staircase1))])
 #VIEW(EXPLODE(1.2,1.2,1.2)(MKPOLS(staircase1)))
 
 #upFloor = OFFSET([.3,.3])(upFloorHPC)
-upFloor = T(3)(4)(PROD([upFloorHPC, INTERVALS(1.5)(1)]))
+upFloor = T(3)(4.15)(PROD([upFloorHPC, INTERVALS(1.5)(1)]))
+upFloor=STRUCT([basementCeiling,upFloor])
 
 W,FW = staircase1
 
@@ -328,33 +332,28 @@ lastStep = (W,[FW[8]])
 lastStep = T(3)(-1.5)(PROD([STRUCT(MKPOLS(lastStep)), INTERVALS(0.06)(1)]))
 staircase1 = larModelProduct([staircase1,larQuote1D([0.16])])
 """
-#step = OFFSET([.0375,0])(STRUCT(MKPOLS((W,[FW[0]]))))
-step = STRUCT(MKPOLS((W,[FW[0]])))
-step = T(3)(5.32)(PROD([step,INTERVALS(.18)(1)]))
+step = OFFSET([.005,0])(STRUCT(MKPOLS((W,[FW[0]]))))
+#step = STRUCT(MKPOLS((W,[FW[0]])))
+step = T(3)(5.29)(PROD([step,INTERVALS(.18)(1)]))
 #steps = STRUCT(NN(8)([ step, T([1,3])([1.0755,-0.18]) ]))
-steps = STRUCT(NN(8)([ step, T([1,3])([1.045,-0.18]) ]))
+steps = STRUCT(NN(8)([ step, T([1,3])([1.044,-0.18]) ]))
 #lastStep = OFFSET([.3,0])(STRUCT(MKPOLS((W,[FW[8]]))))
 lastStep = STRUCT(MKPOLS((W,[FW[10]])))
-lastStep = T(3)(4)(PROD([lastStep, INTERVALS(0.06)(1)]))
+lastStep = T(3)(4.15)(PROD([lastStep, INTERVALS(0.06)(1)]))
 
-ramps = (U,[FU[8],FU[9]])
+ramps = (W,[FW[8],FW[9]])
 tri = SIMPLEX(2)
-sx = U[3][0]-U[0][0]
-sy1 = U[1][1]-U[0][1]
+sx = W[3][0]-W[0][0]
+sy1 = W[1][1]-W[0][1]
 ramps1 = T(2)(1)(R([2,3])(PI/2)(PROD([tri,INTERVALS(1)(1)])))
-ramps1 = S([1,2,3])([sx,sy1,1.5])(ramps1)
-ramps1 = T([1,2,3])([U[0][0],U[0][1],4])(ramps1)
-sy2 = U[17][1]-U[5][1]
+ramps1 = S([1,2,3])([sx+0.02,sy1,1.44])(ramps1)
+ramps1 = T([1,2,3])([W[0][0],W[0][1],4.21])(ramps1) ##4mt le mura, 0.15 il tetto, 0.6 l ultimo step = 4.21
+sy2 = W[17][1]-W[5][1]
 ramps2 = T(2)(1)(R([2,3])(PI/2)(PROD([tri,INTERVALS(1)(1)])))
-ramps2 = S([1,2,3])([sx,sy2,1.5])(ramps2)
-ramps2 = T([1,2,3])([U[5][0],U[5][1],4])(ramps2)
+ramps2 = S([1,2,3])([sx,sy2,1.44])(ramps2)
+ramps2 = T([1,2,3])([W[5][0],W[5][1],4.21])(ramps2)
 
-tri = SIMPLEX(2)
-sy = U[0][1]-U[17][1]
-rampa = T(2)(1)(R([2,3])(PI/2)(PROD([tri,INTERVALS(1)(1)])))
-rampa = S([1,2,3])([sx,sy,1.5])(rampa)
-rampa = T([1,2,3])([U[17][0],U[17][1],4])(rampa)
-staircase1 = STRUCT([lastStep,steps,rampa])
+staircase1 = STRUCT([lastStep,steps,ramps1,ramps2])
 
 VIEW(STRUCT([basementFloors,frameAndWindows,basementWalls,bigColumns,smallColumns, staircase1,upFloor]))
 
