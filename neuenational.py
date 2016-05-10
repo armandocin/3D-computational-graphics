@@ -60,7 +60,7 @@ lines_stairs = [[V[EV[e][0]],V[EV[e][1]]] for e in stairsEdges]
 ductsEdges = [91,25,78,126,24,26,95,89] ##spigoli dei condotti dell'aria
 panelsEdges = [63,10,47,40,58,131,9,17,75,142,132,59,129,114,12,94,33,104,151,46,39,14,134,64,77,147] ##spigoli dei pannelli
 wallsEdges = [32,61,106,45]
-pillarsEdges = set(range(len(EV))).difference(panelsEdges+ductsEdges+stairsEdges+wallsEdges)
+#pillarsEdges = set(range(len(EV))).difference(panelsEdges+ductsEdges+stairsEdges+wallsEdges)
 #pt = (V,[EV[k] for k in panelsEdges+ductsEdges+stairsEdges+wallsEdges])
 
 """ pilastri """
@@ -89,8 +89,9 @@ stairsE = PROD([ stairs, INTERVALS(0.9)(1) ])
 ductsE = PROD([ ducts, INTERVALS(8.4)(1) ])
 panelsE = PROD([ panels, INTERVALS(4.4)(1) ]) ###mettere altezza reale pannelli
 #wallsE = PROD([ walls, INTERVALS(8.4)(1) ])
-##VIEW(STRUCT([pillarsE,panelsE, wallsE, ductsE, stairsE]))
+#VIEW(STRUCT([pillarsE,panelsE, wallsE, ductsE, stairsE]))
 
+""" Costruzione parte finale pilastri su cui poggia il tetto"""
 C,FC = larCuboids([3,1])
 C,EC = larCuboidsFacets([C,FC])
 #VIEW(larModelNumbering(1,1,1)(C,[AA(LIST)(range(len(C))),EC,FC],STRUCT(MKPOLS((C,EC))),0.7))
@@ -109,6 +110,7 @@ cyl = T([1,2,3])([1.1570376645379952/2,0.38021634302098306/2,.05])(cyl)
 top = STRUCT([cyl,cross])
 tops = STRUCT([T([1,2])(P[k])(top) for k in [57,85,53,79,44,92,101,69]])
 tops = T(3)(8.35)(tops)
+
 pillarsE = STRUCT([tops, pillarsE])
 
 """ Costruzione del telaio """
@@ -174,7 +176,6 @@ submodel = STRUCT(MKPOLS((V,EV)))
 ##VIEW(larModelNumbering(1,1,1)(V,[VV,EV],submodel,5))
 
 """ Separazione tipi di muro """
-#TODO: separazione spigoli
 tallWallsEdges = [254,95,140,265,151,7,42,292,274,167,117,244,153,323,296,99,284,271,213,133,315,31]
 thickWallsEdges = [66,86,17,134,98,138,58,14,23,175,37,306,142,162,145,260,233,21,236,191,65,108,74,83,12,160,41,169,203,280,18,245,222,27,131,239,127,78,55,310,120,320,261,10,157,132,47,43,221,154,252,46,0,49,170,130,90,29,228]
 wallsEdges = set(range(len(EV))).difference(tallWallsEdges+[328]+thickWallsEdges) #328 spigolo che devo sostituire con la vetrata
@@ -196,7 +197,7 @@ thickWalls = PROD([ thickWalls, INTERVALS(4)(1) ])
 """ Creazioni pannelli seminterrato """
 filename = "pannelli-semint.lines"
 lines_ps = lines2lines(filename)
-U,EU = lines2lar(lines_ps) ##creo Vertici e Spigoli del piano terra
+U,EU = lines2lar(lines_ps)
 UU = AA(LIST)(range(len(U)))
 submodel = STRUCT(MKPOLS((U,EU)))
 ##VIEW(larModelNumbering(1,1,1)(U,[UU,EU],submodel,0.04))
@@ -242,11 +243,7 @@ regularColumns = (C, [FC[k] for k in set(range(len(FC))).difference([112,113,124
 tallColumnsHPCs = T(3)(-2.4)(PROD([ STRUCT(MKPOLS(tallColumns)), INTERVALS(6.5)(1) ]))
 regularColumnsHPCs = PROD([ STRUCT(MKPOLS(regularColumns)), INTERVALS(4)(1) ])
 smallColumns = STRUCT([regularColumnsHPCs,tallColumnsHPCs])
-#C,FC = larCuboids([1,1])
-#C = ((mat(C)*.5)+ [(V[367][0]+1.4),7.4]).tolist()
-#columns = PROD([ STRUCT(MKPOLS((C,FC))), INTERVALS(4)(1) ])
-#colonne = STRUCT(NN(12)([columns,T(1)(7.2)]))
-#colonne = STRUCT(NN(12)([colonne,T(2)(7.2)]))
+
 	
 """ Creazione colonne grandi """
 ##colonne grandi verticali
@@ -306,23 +303,23 @@ U,FU,EU,poly = larFromLines(lines)
 #VIEW(larModelNumbering(1,1,1)(U,[AA(LIST)(range(len(U))),EU,FU],STRUCT(MKPOLS((U,EU))),5))
 
 U = (mat(U)-U[10]).tolist()
-U = ((mat(U)*(94.1328/U[9][1]))+ [20, 0.0]).tolist()
+U = ((mat(U)*(94.6328/U[9][1]))+ [20, 0.0]).tolist()
 
 staircase1 = (U,[FU[k] for k in range(9)])
 upFloorHPC = DIFFERENCE([STRUCT(MKPOLS((U,FU))), STRUCT(MKPOLS(staircase1))])
 #VIEW(EXPLODE(1.2,1.2,1.2)(MKPOLS(staircase1)))
 
-upFloor = OFFSET([.3,.3])(upFloorHPC)
-upFloor = T(3)(4)(PROD([upFloor, INTERVALS(1.5)(1)]))
+#upFloor = OFFSET([.3,.3])(upFloorHPC)
+upFloor = T(3)(4)(PROD([upFloorHPC, INTERVALS(1.5)(1)]))
 
 W,FW = staircase1
 
 stairsmodel = SKEL_1(STRUCT(MKPOLS((W,FW))))
-VIEW(larModelNumbering(1,1,1)(W,[AA(LIST)(range(len(W))),FW],stairsmodel,2))
 FW = sorted(FW,key=lambda cell: CCOMB([W[k] for k in cell])[0]) #Riordino le facce delle scale
 stairsmodel = SKEL_1(STRUCT(MKPOLS((W,FW))))
-VIEW(larModelNumbering(1,1,1)(W,[AA(LIST)(range(len(W))),FW],stairsmodel,2))
 """
+VIEW(larModelNumbering(1,1,1)(W,[AA(LIST)(range(len(W))),FW],stairsmodel,2))
+
 staircase1struct = Struct([([W[k] for k in cell],[range(len(cell))]) for cell in [FW[i] for i in range(8)]]) 
 scalinata1 = embedStruct(1)(staircase1struct)
 staircase1 = CAT(DISTL([t(0,0,-(2*0.16)),scalinata1.body]))
@@ -332,10 +329,13 @@ lastStep = (W,[FW[8]])
 lastStep = T(3)(-1.5)(PROD([STRUCT(MKPOLS(lastStep)), INTERVALS(0.06)(1)]))
 staircase1 = larModelProduct([staircase1,larQuote1D([0.16])])
 """
-step = OFFSET([.0375,0])(STRUCT(MKPOLS((W,[FW[0]]))))
+#step = OFFSET([.0375,0])(STRUCT(MKPOLS((W,[FW[0]]))))
+step = STRUCT(MKPOLS((W,[FW[0]])))
 step = T(3)(5.32)(PROD([step,INTERVALS(.18)(1)]))
-steps = STRUCT(NN(8)([ step, T([1,3])([1.0755,-0.18]) ]))
-lastStep = OFFSET([.3,0])(STRUCT(MKPOLS((W,[FW[8]]))))
+#steps = STRUCT(NN(8)([ step, T([1,3])([1.0755,-0.18]) ]))
+steps = STRUCT(NN(8)([ step, T([1,3])([1.045,-0.18]) ]))
+#lastStep = OFFSET([.3,0])(STRUCT(MKPOLS((W,[FW[8]]))))
+lastStep = STRUCT(MKPOLS((W,[FW[8]])))
 lastStep = T(3)(4)(PROD([lastStep, INTERVALS(0.06)(1)]))
 
 sx = U[4][0]-U[7][0]
@@ -347,6 +347,9 @@ rampa = T([1,2,3])([U[8][0],U[8][1],4])(rampa)
 staircase1 = STRUCT([lastStep,steps,rampa])
 
 VIEW(STRUCT([basementFloors,frameAndWindows,basementWalls,bigColumns,smallColumns, staircase1,upFloor]))
+
+""" Costruzione seconda parte del podio """
+#TODO
 
 """ Creazione cornicione del podio """
 lines = lines2lines("cornicione.lines")
