@@ -298,14 +298,13 @@ seminterrato = STRUCT([basementFloors,frameAndWindows,basementWalls,bigColumns,s
 #VIEW(STRUCT([basementFloors,frameAndWindows,basementWalls,bigColumns,smallColumns]))
 
 """ Costruzione pavimento podio/tetto seminterrato """
-lines = lines2lines("tetto-semint.lines")
+lines = lines2lines("tetto-semint2.lines")
 U,FU,EU,poly = larFromLines(lines)
 #VIEW(larModelNumbering(1,1,1)(U,[AA(LIST)(range(len(U))),EU,FU],STRUCT(MKPOLS((U,EU))),5))
 
-U = (mat(U)-U[10]).tolist()
-U = ((mat(U)*(94.6328/U[9][1]))+ [20, 0.0]).tolist()
-
-staircase1 = (U,[FU[k] for k in range(9)])
+U = (mat(U)-U[20]).tolist()
+U = ((mat(U)*(94.6328/U[23][1]))+ [20, 0.0]).tolist()
+staircase1 = (U,[FU[k] for k in range(11)])
 upFloorHPC = DIFFERENCE([STRUCT(MKPOLS((U,FU))), STRUCT(MKPOLS(staircase1))])
 #VIEW(EXPLODE(1.2,1.2,1.2)(MKPOLS(staircase1)))
 
@@ -335,15 +334,26 @@ step = T(3)(5.32)(PROD([step,INTERVALS(.18)(1)]))
 #steps = STRUCT(NN(8)([ step, T([1,3])([1.0755,-0.18]) ]))
 steps = STRUCT(NN(8)([ step, T([1,3])([1.045,-0.18]) ]))
 #lastStep = OFFSET([.3,0])(STRUCT(MKPOLS((W,[FW[8]]))))
-lastStep = STRUCT(MKPOLS((W,[FW[8]])))
+lastStep = STRUCT(MKPOLS((W,[FW[10]])))
 lastStep = T(3)(4)(PROD([lastStep, INTERVALS(0.06)(1)]))
 
-sx = U[4][0]-U[7][0]
-sy = U[7][1]-U[8][1]
+ramps = (U,[FU[8],FU[9]])
 tri = SIMPLEX(2)
+sx = U[3][0]-U[0][0]
+sy1 = U[1][1]-U[0][1]
+ramps1 = T(2)(1)(R([2,3])(PI/2)(PROD([tri,INTERVALS(1)(1)])))
+ramps1 = S([1,2,3])([sx,sy1,1.5])(ramps1)
+ramps1 = T([1,2,3])([U[0][0],U[0][1],4])(ramps1)
+sy2 = U[17][1]-U[5][1]
+ramps2 = T(2)(1)(R([2,3])(PI/2)(PROD([tri,INTERVALS(1)(1)])))
+ramps2 = S([1,2,3])([sx,sy2,1.5])(ramps2)
+ramps2 = T([1,2,3])([U[5][0],U[5][1],4])(ramps2)
+
+tri = SIMPLEX(2)
+sy = U[0][1]-U[17][1]
 rampa = T(2)(1)(R([2,3])(PI/2)(PROD([tri,INTERVALS(1)(1)])))
 rampa = S([1,2,3])([sx,sy,1.5])(rampa)
-rampa = T([1,2,3])([U[8][0],U[8][1],4])(rampa)
+rampa = T([1,2,3])([U[17][0],U[17][1],4])(rampa)
 staircase1 = STRUCT([lastStep,steps,rampa])
 
 VIEW(STRUCT([basementFloors,frameAndWindows,basementWalls,bigColumns,smallColumns, staircase1,upFloor]))
