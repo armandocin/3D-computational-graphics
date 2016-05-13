@@ -358,7 +358,20 @@ staircase1 = STRUCT([lastStep,steps,ramps1,ramps2])
 VIEW(STRUCT([basementFloors,frameAndWindows,basementWalls,bigColumns,smallColumns, staircase1,upFloor]))
 
 """ Costruzione seconda parte del podio """
-#TODO
+lines = lines2lines("podio2.lines")
+P,FP,EP,polygons = larFromLines(lines)
+#VIEW(larModelNumbering(1,1,1)(P,[AA(LIST)(range(len(P))),EP,FP],STRUCT(MKPOLS((P,EP))),0.07))
+P = ((mat(P)-P[19])*(83.71803810292634/(P[19][1]-P[2][1]))).tolist()
+assert U[24] == [108.4258050454087, 94.6328]
+P = (mat(P)+[108.4258050454087, 94.6328]).tolist()
+
+staircases = (P,[FP[k] for k in range(4)])
+podium = DIFFERENCE([STRUCT(MKPOLS((P,FP))), STRUCT(MKPOLS(staircases))])
+podium = PROD([podium,INTERVALS(5.65)(1)])
+
+VIEW(STRUCT([podium,basementWalls,upFloor]))
+
+
 
 """ Creazione cornicione del podio """
 lines = lines2lines("cornicione.lines")
@@ -369,3 +382,13 @@ Z = ((mat(Z)*(94.1328/Z[17][1]))+ [19.8, -.2]).tolist()
 
 cornicione = OFFSET([.2,.2])(STRUCT(MKPOLS((Z,EZ))))
 cornicione = T(3)(5.5)(PROD([cornicione, INTERVALS(.5)(1)]))
+
+def createSteps(N,dimensioni):
+    sx,sy,sz = dimensioni
+    V,FV=larCuboids([1,1])
+    step = S([1,2])([sx,sy])(STRUCT(MKPOLS((V,FV))))
+    step =  steps = PROD([step,INTERVALS(sz)(1)])
+    for i in range(1,N):
+        stepp = T(3)(-sz*i)(S(1)(1+i)(step))
+        steps = STRUCT([steps,stepp])
+    return steps
