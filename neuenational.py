@@ -345,15 +345,15 @@ lastStep = T(3)(4.15)(PROD([lastStep, INTERVALS(0.06)(1)]))
 
 ramps = (W,[FW[8],FW[9]])
 tri = SIMPLEX(2)
-sx = W[3][0]-W[0][0]
-sy1 = W[1][1]-W[0][1]
+sx = W[0][0]-W[24][0]
+sy1 = W[24][1]-W[20][1]
 ramps1 = T(2)(1)(R([2,3])(PI/2)(PROD([tri,INTERVALS(1)(1)])))
 ramps1 = S([1,2,3])([sx+0.02,sy1,1.44])(ramps1)
-ramps1 = T([1,2,3])([W[0][0],W[0][1],4.21])(ramps1) ##4mt le mura, 0.15 il tetto, 0.6 l ultimo step = 4.21
-sy2 = W[17][1]-W[5][1]
+ramps1 = T([1,2,3])([W[20][0],W[20][1],4.21])(ramps1) ##4mt le mura, 0.15 il tetto, 0.6 l ultimo step = 4.21
+sy2 = W[6][1]-W[7][1]
 ramps2 = T(2)(1)(R([2,3])(PI/2)(PROD([tri,INTERVALS(1)(1)])))
 ramps2 = S([1,2,3])([sx,sy2,1.44])(ramps2)
-ramps2 = T([1,2,3])([W[5][0],W[5][1],4.21])(ramps2)
+ramps2 = T([1,2,3])([W[7][0],W[7][1],4.21])(ramps2)
 
 staircase1 = STRUCT([lastStep,steps,ramps1,ramps2])
 
