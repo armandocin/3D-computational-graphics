@@ -364,13 +364,49 @@ lines = lines2lines("podio.lines")
 P,FP,EP,polygons = larFromLines(lines)
 #VIEW(larModelNumbering(1,1,1)(P,[AA(LIST)(range(len(P))),EP,FP],STRUCT(MKPOLS((P,EP))),0.07))
 P = ((mat(P)-P[19])*(83.71803810292634/(P[19][1]-P[2][1]))).tolist()
-assert U[24] == [108.4258050454087, 94.6328]
+#assert U[3] == [108.4258050454087, 94.6328]
 P = (mat(P)+[108.4258050454087, 94.6328]).tolist()
 
 staircases = (P,[FP[k] for k in range(1,6)+[7]])
 podium = DIFFERENCE([STRUCT(MKPOLS((P,FP))), STRUCT(MKPOLS(staircases))])
 podium = PROD([podium,INTERVALS(5.65)(1)])
 #VIEW(STRUCT([podium,basementWalls,upFloor]))
+
+""" Costruzione delle scalinate """
+
+def createFilledSteps(N,dimensioni):
+    sx,sy,sz = dimensioni
+    V,FV=larCuboids([1,1])
+    step = S([1,2])([sx,sy])(STRUCT(MKPOLS((V,FV))))
+    step =  steps = PROD([step,INTERVALS(sz)(1)])
+    for i in range(1,N):
+        stepp = T(3)(-sz*i)(S(1)(1+i)(step))
+        steps = STRUCT([steps,stepp])
+    return steps
+
+def createSteps(N,dimensioni):
+    sx,sy,sz = dimensioni
+    V,FV=larCuboids([1,1])
+    step = S([1,2])([sx,sy])(STRUCT(MKPOLS((V,FV))))
+    step =  steps = PROD([step,INTERVALS(sz)(1)])
+    steps = STRUCT(NN(N)([step, T([1,3])([sx,-sz])]))
+    return steps
+
+sx = (P[7][0]-P[1][0])/15
+sy = P[7][1]-P[8][1]
+sz = 5.65/29
+sc2p1 = createSteps(15,[sx, sy, sz])
+sc2p1 = T([1,2,3])([P[7][0], P[7][1],(5.65-2*sz)])(R([1,2])(PI)(sc2p1))
+largeStep = PROD([STRUCT(MKPOLS((P,[FP[1]]))), INTERVALS(sz)(1)])
+largeStep = T(3)(sz*12)(largeStep)
+sc2p2 = createSteps(10,[sx, sy, sz])
+sc2p2 = T([1,2,3])([ P[0][0], P[0][1], sz*11 ])(R([1,2])(PI)(sc2p2))
+secondLastStep = createSteps(1,[(sx+0.1269078748692274) , (sy+.2), sz])
+lastStep = createSteps(1,[(2*sx+0.1269078748692274), (sy+.6), sz])
+secondLastStep = T([2,3])([-0.4,sz])(R([1,2])(PI)(secondLastStep))
+lastStep = R([1,2])(PI)(lastStep)
+last2steps = T(2)((sy+.6))(STRUCT([secondLastStep,lastStep]))
+staircase2 = STRUCT([sc2p1,sc2p2,largeStep, T([1,2])(P[22])(last2steps)])
 
 
 
@@ -384,12 +420,3 @@ Z = ((mat(Z)*(94.1328/Z[17][1]))+ [19.8, -.2]).tolist()
 cornicione = OFFSET([.2,.2])(STRUCT(MKPOLS((Z,EZ))))
 cornicione = T(3)(5.5)(PROD([cornicione, INTERVALS(.5)(1)]))
 
-def createSteps(N,dimensioni):
-    sx,sy,sz = dimensioni
-    V,FV=larCuboids([1,1])
-    step = S([1,2])([sx,sy])(STRUCT(MKPOLS((V,FV))))
-    step =  steps = PROD([step,INTERVALS(sz)(1)])
-    for i in range(1,N):
-        stepp = T(3)(-sz*i)(S(1)(1+i)(step))
-        steps = STRUCT([steps,stepp])
-    return steps
