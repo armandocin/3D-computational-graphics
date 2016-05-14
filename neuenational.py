@@ -302,13 +302,15 @@ lines = lines2lines("tetto-semint2.lines")
 U,FU,EU,poly = larFromLines(lines)
 #VIEW(larModelNumbering(1,1,1)(U,[AA(LIST)(range(len(U))),EU,FU],STRUCT(MKPOLS((U,EU))),5))
 
-U = (mat(U)-U[20]).tolist()
-U = ((mat(U)*(94.6328/U[23][1]))+ [20, 0.0]).tolist()
+U = (mat(U)-U[5]).tolist()
+U = ((mat(U)*(94.6328/U[2][1]))+ [20, 0.0]).tolist()
 
-basementCeiling = T(3)(4)(PROD([STRUCT(MKPOLS((U,FU))), INTERVALS(0.15)(1)]))
+stairsHoles = (U,[FU[12],FU[13]])
+basementCeiling = DIFFERENCE([STRUCT(MKPOLS((U,FU))), STRUCT(MKPOLS(stairsHoles))])
+basementCeiling = T(3)(4)(PROD([basementCeiling, INTERVALS(0.15)(1)]))
 
 staircase1 = (U,[FU[k] for k in range(11)])
-upFloorHPC = DIFFERENCE([STRUCT(MKPOLS((U,FU))), STRUCT(MKPOLS(staircase1))])
+upFloorHPC = DIFFERENCE([STRUCT(MKPOLS((U,FU))), STRUCT([STRUCT(MKPOLS(staircase1)),STRUCT(MKPOLS(stairsHoles))])])
 #VIEW(EXPLODE(1.2,1.2,1.2)(MKPOLS(staircase1)))
 
 #upFloor = OFFSET([.3,.3])(upFloorHPC)
@@ -358,18 +360,17 @@ staircase1 = STRUCT([lastStep,steps,ramps1,ramps2])
 VIEW(STRUCT([basementFloors,frameAndWindows,basementWalls,bigColumns,smallColumns, staircase1,upFloor]))
 
 """ Costruzione seconda parte del podio """
-lines = lines2lines("podio2.lines")
+lines = lines2lines("podio.lines")
 P,FP,EP,polygons = larFromLines(lines)
 #VIEW(larModelNumbering(1,1,1)(P,[AA(LIST)(range(len(P))),EP,FP],STRUCT(MKPOLS((P,EP))),0.07))
 P = ((mat(P)-P[19])*(83.71803810292634/(P[19][1]-P[2][1]))).tolist()
 assert U[24] == [108.4258050454087, 94.6328]
 P = (mat(P)+[108.4258050454087, 94.6328]).tolist()
 
-staircases = (P,[FP[k] for k in range(4)])
+staircases = (P,[FP[k] for k in range(1,6)+[7]])
 podium = DIFFERENCE([STRUCT(MKPOLS((P,FP))), STRUCT(MKPOLS(staircases))])
 podium = PROD([podium,INTERVALS(5.65)(1)])
-
-VIEW(STRUCT([podium,basementWalls,upFloor]))
+#VIEW(STRUCT([podium,basementWalls,upFloor]))
 
 
 
