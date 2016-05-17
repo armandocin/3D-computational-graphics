@@ -177,22 +177,26 @@ submodel = STRUCT(MKPOLS((V,EV)))
 
 """ Separazione tipi di muro """
 tallWallsEdges = [254,95,140,265,151,7,42,292,274,167,117,244,153,323,296,99,284,271,213,133,315,31]
-thickWallsEdges = [66,86,17,134,98,138,58,14,23,175,37,306,142,162,145,260,233,21,236,191,65,108,74,83,12,160,41,169,203,280,18,245,222,27,131,239,127,78,55,310,120,320,261,10,157,132,47,43,221,154,252,46,0,49,170,130,90,29,228]
-wallsEdges = set(range(len(EV))).difference(tallWallsEdges+[328]+thickWallsEdges) #328 spigolo che devo sostituire con la vetrata
+thickWallsEdges = [134,98,138,58,14,23,175,37,306,142,162,145,260,233,21,236,191,65,108,74,83,12,160,41,169,203,280,18,245,222,27,131,239,127,78,55,310,120,320,261,10,157,132,47,43,221,154,252,46,0,49,170,130,90,29,228]
+perimeterWallsEdges = [66,86,17]
+wallsEdges = set(range(len(EV))).difference(tallWallsEdges+[328]+thickWallsEdges+perimeterWallsEdges) #328 spigolo che devo sostituire con la vetrata
 
 tallWallsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in tallWallsEdges]))
 thickWallsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in thickWallsEdges]))
+perimeterWallsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in perimeterWallsEdges]))
 wallsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in wallsEdges]))
 
 """ Faccio l'OFFSET """
 walls = OFFSET([.3,.3])(wallsHPCs)
 tallWalls = COLOR(CYAN)(OFFSET([.5,.5])(tallWallsHPCs))
 thickWalls = COLOR(GREEN)(OFFSET([.5,.5])(thickWallsHPCs))
+perimeterWalls = COLOR(YELLOW)(OFFSET([.5,.5])(perimeterWallsHPCs))
 
 """ Estrusione muri """
 walls = PROD([ walls, INTERVALS(4)(1) ])
 tallWalls = T(3)(-2.5)(PROD([ tallWalls, INTERVALS(6.5)(1) ]))
 thickWalls = PROD([ thickWalls, INTERVALS(4)(1) ])
+perimeterWalls = PROD([ perimeterWalls, INTERVALS(5.65)(1) ])
 
 """ Creazioni pannelli seminterrato """
 filename = "pannelli-semint.lines"
@@ -207,7 +211,7 @@ U = (mat(U) + [23.6088, 21.481199999999998]).tolist()
 basementPanels =  COLOR(YELLOW)(OFFSET([.2,.2])(STRUCT(MKPOLS([U,EU]))))
 basementPanels = PROD([ basementPanels, INTERVALS(3)(1) ])
 
-basementWalls = STRUCT([walls, thickWalls, basementPanels,tallWalls])
+basementWalls = STRUCT([walls, thickWalls, basementPanels,tallWalls, perimeterWalls])
 
 """ Creazione colonne piccole """
 def createColumns(repetitionsXY, traslationXY, scale=1):
@@ -397,18 +401,35 @@ sy = P[7][1]-P[8][1]
 sz = 5.65/29
 sc2p1 = createSteps(15,[sx, sy, sz])
 sc2p1 = T([1,2,3])([P[7][0], P[7][1],(5.65-2*sz)])(R([1,2])(PI)(sc2p1))
+
 largeStep = PROD([STRUCT(MKPOLS((P,[FP[1]]))), INTERVALS(sz)(1)])
 largeStep = T(3)(sz*12)(largeStep)
+
 sc2p2 = createSteps(10,[sx, sy, sz])
 sc2p2 = T([1,2,3])([ P[0][0], P[0][1], sz*11 ])(R([1,2])(PI)(sc2p2))
+
 secondLastStep = createSteps(1,[(sx+0.1269078748692274) , (sy+.2), sz])
 lastStep = createSteps(1,[(2*sx+0.1269078748692274), (sy+.6), sz])
 secondLastStep = T([2,3])([-0.4,sz])(R([1,2])(PI)(secondLastStep))
 lastStep = R([1,2])(PI)(lastStep)
 last2steps = T(2)((sy+.6))(STRUCT([secondLastStep,lastStep]))
+
 staircase2 = STRUCT([sc2p1,sc2p2,largeStep, T([1,2])(P[22])(last2steps)])
 
+""" Creazione scalinata frontale """
+sx = (P[4][0]-P[5][0])/3
+sy = P[14][1]-P[5][1]
+sz = 1.5/7
+staircase3 = T([1,2,3])([ P[5][0], P[5][1], (5.65 - 2*sz)])(createSteps(3,[sx,sy,sz]))
 
+middleStep = T(3)(5.65-5*sz)(PROD([STRUCT(MKPOLS([P,[FP[5]]])), INTERVALS(sz)(1)])) 
+
+secondLastStep = createSteps(1,[(sx+0.25724569230249017) , (sy+.74), sz]) #P[20][0]-P[9][0]=0.25724569230249017
+lastStep = createSteps(1,[(2*sx+0.25724569230249017), (sy+(.77*2)), sz]) #P[11][1]-P[12][1] = 0.771737076907506
+secondLastStep = T([2,3])([.4,sz])(secondLastStep)
+last2steps = T([1,2,3])([P[12][0],P[12][1],4.15])(STRUCT([secondLastStep,lastStep]))
+
+staircase3 = STRUCT([staircase3,middleStep,last2steps])
 
 """ Creazione cornicione del podio """
 lines = lines2lines("cornicione.lines")
