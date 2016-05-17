@@ -424,20 +424,24 @@ staircase3 = T([1,2,3])([ P[5][0], P[5][1], (5.65 - 2*sz)])(createSteps(3,[sx,sy
 
 middleStep = T(3)(5.65-5*sz)(PROD([STRUCT(MKPOLS([P,[FP[5]]])), INTERVALS(sz)(1)])) 
 
-secondLastStep = createSteps(1,[(sx+0.25724569230249017) , (sy+.74), sz]) #P[20][0]-P[9][0]=0.25724569230249017
-lastStep = createSteps(1,[(2*sx+0.25724569230249017), (sy+(.77*2)), sz]) #P[11][1]-P[12][1] = 0.771737076907506
-secondLastStep = T([2,3])([.4,sz])(secondLastStep)
-last2steps = T([1,2,3])([P[12][0],P[12][1],4.15])(STRUCT([secondLastStep,lastStep]))
+secondLastStep = createSteps(1,[(sx+0.25724569230249017) , (sy+1.34), sz]) #P[20][0]-P[9][0]=0.25724569230249017
+lastStep = createSteps(1,[(2*sx+0.25724569230249017), (sy+(1.17*2)), sz]) #P[11][1]-P[12][1] = 0.771737076907506
+secondLastStep = T([2,3])([.5,sz])(secondLastStep)
+last2steps = T([1,2,3])([P[12][0],P[12][1]-.4,4.15])(STRUCT([secondLastStep,lastStep]))
 
 staircase3 = STRUCT([staircase3,middleStep,last2steps])
 
 """ Creazione cornicione del podio """
-lines = lines2lines("cornicione.lines")
-Z,EZ = lines2lar(lines)
-#VIEW(larModelNumbering(1,1,1)(Z,[AA(LIST)(range(len(Z))),EZ,FZ],STRUCT(MKPOLS((Z,EZ))),5))
-Z = (mat(Z)-Z[19]).tolist()
-Z = ((mat(Z)*(94.1328/Z[17][1]))+ [19.8, -.2]).tolist()
+c1 = STRUCT([T([1,3])([20,5.77])(CUBOID([1.2, 94.6328, .5])), 
+	T([1,2,3])([20.2,0.2,5.65])(CUBOID([.8,94.2328,.12]))]) #U[5] = [20.0, 0.0]
+c2 = STRUCT([T([1,2,3])([21.2,1.2,5.77])(R([1,2])(-PI/2)(CUBOID([1.2, 81.09520387487387, .5]))), 
+	T([1,2,3])([21,1,5.65])(R([1,2])(-PI/2)(CUBOID([.8, 81.09520387487387, .12])))]) #U[4][0]-U[5][0] = 82.29520387487388
+c3 = STRUCT([T([1,2,3])([21.2,94.6328,5.77])(R([1,2])(-PI/2)(CUBOID([1.2, 20.636420209853284, .5]))), 
+	T([1,2,3])([21,(94.6328-.2),5.65])(R([1,2])(-PI/2)(CUBOID([.8, 20.636420209853284, .12])))]) #P[8][0]-U[2][0] = 20.636420209853284
+c4 = STRUCT([T([1,2,3])([U[24][0]-1.2,(U[24][1]+1.2),5.77])(R([1,2])(-PI/2)(CUBOID([1.2, P[3][0]-U[24][0], .5]))), 
+	T([1,2,3])([U[24][0]-1,(U[24][1]+1),5.65])(R([1,2])(-PI/2)(CUBOID([.8, P[3][0]-U[24][0], .12])))]) #U[24]=[93.92053529767912, 10.952958789101919] P[3][0]-U[24][0] = 36.26825531652128
+c5 = STRUCT([T([1,2,3])([P[3][0]-1.2,P[3][1],5.77])(CUBOID([1.2, P[23][1]-P[3][1], .5])), 
+	T([1,2,3])([P[3][0]-1,P[3][1]+.2,5.65])(CUBOID([.8,(P[23][1]-P[3][1])-.4,.12]))]) #P[23][1]-P[3][1] = 
 
-cornicione = OFFSET([.2,.2])(STRUCT(MKPOLS((Z,EZ))))
 cornicione = T(3)(5.5)(PROD([cornicione, INTERVALS(.5)(1)]))
 
