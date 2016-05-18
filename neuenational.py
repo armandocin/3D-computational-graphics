@@ -159,8 +159,8 @@ telaio = STRUCT([telaioN,telaioE,telaioO,telaioS])
 telaio = T([1,2])(SUM([[7.132334158738434, 7.237221425778705],[0,.25]]))(telaio) ##V[30]= [7.132334158738434, 7.237221425778705] (v30 e' il vertice in basso a sinistra delle mura)
 
 """Visualizzazione Pianoterra completo"""
-pianoterra = T([1,2,3])([43.5,21.7,5.5])(STRUCT([pillarsE,panelsE, telaio, ductsE, stairsE,roof]))
-#VIEW(pianoterra)
+upLevel = T([1,2,3])([43.5,21.7,5.5])(STRUCT([pillarsE,panelsE, telaio, ductsE, stairsE,roof]))
+#VIEW(upLevel)
 
 """ Creazione mura seminterrato """
 filename = "mura-semint.lines"
@@ -298,7 +298,7 @@ frame = OFFSET([.2,.25,.25])(STRUCT(MKPOLS([P,EP])))
 frameAndWindows = R([2,3])(PI/2)(STRUCT([COLOR(GRAY)(frame),glassWalls]))
 frameAndWindows = T([1,2])([20.4,94.1328])(R([1,2])(-PI/2)(frameAndWindows))
 
-seminterrato = STRUCT([basementFloors,frameAndWindows,basementWalls,bigColumns,smallColumns])
+lowerLevel = STRUCT([basementFloors,frameAndWindows,basementWalls,bigColumns,smallColumns])
 #VIEW(STRUCT([basementFloors,frameAndWindows,basementWalls,bigColumns,smallColumns]))
 
 """ Costruzione pavimento podio/tetto seminterrato """
@@ -361,7 +361,7 @@ ramps2 = T([1,2,3])([W[7][0],W[7][1],4.21])(ramps2)
 
 staircase1 = STRUCT([lastStep,steps,ramps1,ramps2])
 
-VIEW(STRUCT([basementFloors,frameAndWindows,basementWalls,bigColumns,smallColumns, staircase1,upFloor]))
+#VIEW(STRUCT([basementFloors,frameAndWindows,basementWalls,bigColumns,smallColumns, staircase1,upFloor]))
 
 """ Costruzione seconda parte del podio """
 lines = lines2lines("podio.lines")
@@ -442,6 +442,17 @@ c4 = STRUCT([T([1,2,3])([U[24][0]-1.2,(U[24][1]+1.2),5.77])(R([1,2])(-PI/2)(CUBO
 	T([1,2,3])([U[24][0]-1,(U[24][1]+1),5.65])(R([1,2])(-PI/2)(CUBOID([.8, P[3][0]-U[24][0], .12])))]) #U[24]=[93.92053529767912, 10.952958789101919] P[3][0]-U[24][0] = 36.26825531652128
 c5 = STRUCT([T([1,2,3])([P[3][0]-1.2,P[3][1],5.77])(CUBOID([1.2, P[23][1]-P[3][1], .5])), 
 	T([1,2,3])([P[3][0]-1,P[3][1]+.2,5.65])(CUBOID([.8,(P[23][1]-P[3][1])-.4,.12]))]) #P[23][1]-P[3][1] = 
+c6 = STRUCT([T([1,2,3])([P[9][0]-1.2,P[9][1],5.77])(CUBOID([1.2, P[17][1]-P[9][1], .5])), 
+	T([1,2,3])([P[9][0]-1,P[9][1]+.2,5.65])(CUBOID([.8,(P[17][1]-P[9][1])-.4,.12]))])
+c7 = STRUCT([T([1,2,3])([P[18][0],P[18][1],5.77])(R([1,2])(-PI/2)(CUBOID([1.2, (P[17][0]-P[18][0])-1.2 , .5]))), 
+	T([1,2,3])([P[18][0]+.2,P[18][1]-.2,5.65])(R([1,2])(-PI/2)(CUBOID([.8, (P[17][0]-P[18][0])-.8, .12])))])
+pattern = (P[14][1]-P[5][1])+1.2
+c8 = STRUCT(NN(2)([R([1,2])(-PI/2)(CUBOID([1.2, (P[11][0]-P[5][0])-1.2 , .5])), T(2)(pattern)]))
+p8 = STRUCT(NN(2)([R([1,2])(-PI/2)(CUBOID([.8, (P[11][0]-P[5][0])-1.2 , .12])), T(2)(pattern)]))
+c8 = STRUCT([T([1,2,3])([P[5][0],P[5][1],5.77])(c8), 
+	T([1,2,3])([P[5][0]+.2,P[5][1]-.2,5.65])(p8)])
 
-cornicione = T(3)(5.5)(PROD([cornicione, INTERVALS(.5)(1)]))
+cornicione = STRUCT([ci for i in range(1,9)])
+podium = STRUCT([upFloor,podium,cornicione,staircase1,staircase2,staircase3])
 
+#VIEW(STRUCT([upLevel, lowerLevel, podium]))
