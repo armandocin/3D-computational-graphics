@@ -1,7 +1,7 @@
 #! /usr/bin/python
 
 from larlib import *
-from myfun import *
+from myfunctions import *
 
 """ Costruzione della struttra di travi del tetto tramite pyplasm """
 V=[[0,0],[0,64.85]]
@@ -215,30 +215,6 @@ basementPanels = PROD([ basementPanels, INTERVALS(3)(1) ])
 basementWalls = STRUCT([walls, thickWalls, basementPanels,tallWalls, perimeterWalls])
 
 """ Creazione colonne piccole """
-def createColumns(repetitionsXY, traslationXY, scale=1):
-	tx,ty = traslationXY
-	rx,ry = repetitionsXY
-	P,FP = larCuboids([1,1])
-	P,EP = larCuboidsFacets([P,FP])
-	P = (mat(P)*scale).tolist()
-	O=P;EO=EP;FO=FP
-	for i in range(rx - 1):
-		X = (mat(P) + [ tx*(i+1) ,0 ]).tolist()
-		EX = [SUM([EP[z],[4*(i+1),4*(i+1)]]) for z in range(len(EP))]
-		FX = [[FP[0][u]+(4*(i+1)) for u in range(4)]]
-		O = O+X
-		EO = EO+EX
-		FO = FO+FX
-	P=O;EP=EO;FP=FO
-	for i in range(ry - 1):
-		X = (mat(O)+ [0, ty*(i+1)]).tolist()
-		P=P+X
-		EX = [SUM([EO[z],[(4*rx)*(i+1),(4*rx)*(i+1)]]) for z in range(len(EO))]
-		EP=EP+EX
-		FX = [[FP[w][u]+((4*rx)*(i+1)) for u in range(4)] for w in range(len(FO))]
-		FP=FP+FX
-	return P,FP,EP
-
 C,FC,EC = createColumns([12,12],[7.2,7.2],.5)
 C = (mat(C)+ [(V[309][0]+1.4),7.4]).tolist()
 #CC = AA(LIST)(range(len(C)))
@@ -366,14 +342,25 @@ staircase1 = STRUCT([lastStep,steps,ramps1,ramps2])
 
 """ Costruzione scale interne """
 sy=(U[32][0]-U[34][0])/2; sz=5.55/32
-flight1 = createSteps(15,[.27,sy,sz])
-tensor = MAT([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,TAN(PI/6),0,1]])
-flight2 = R([1,2])(-PI/2)(flight1)
-flight1 = T([1,2,3])([U[34][0]+sy,U[34][1],(5.65-sz*2)])(R([1,2])(PI/2)(flight1))
-flight2 = T([1,2,3])([U[34][0]+sy,U[34][1]+.27*15,(.1+sz*14)])(flight2)
-sx = (U[35][1]-U[34][1])-.27*15
-largeStep = T([1,2,3])([U[35][0],U[35][1]-sx,.1+sz*15])(CUBOID([(U[32][0]-U[34][0]),sx,sz]))
+flight1origin = createSteps(15,[.27,sy-.06,sz])
 
+tanBeta = (sz*15)/(.27*15)
+tensor = MAT([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,-tanBeta,0,1]])
+underStair = tensor(CUBOID([.27*15,sy,sz]))
+sideStair = STRUCT(NN(2)([tensor(CUBOID([.27*15,.03,sz*2])),T(2)(sy-.03)]))
+flight1origin = R([1,2])(PI/2)(STRUCT([T(2)(.03)(flight1origin),underStair,sideStair]))
+
+flight2origin = R([1,2])(-PI)(flight1origin)
+flight1 = T([1,2,3])([U[34][0]+sy,U[34][1],(5.65-sz*2)])(flight1origin)
+flight2 = T([1,2,3])([U[34][0]+sy,U[34][1]+.27*15,(.1+sz*14)])(flight2origin)
+sx = (U[35][1]-U[34][1])-.27*15
+largeStep = T([1,2,3])([U[35][0],U[35][1]-sx,(.1+sz*15)-sz])(CUBOID([(U[32][0]-U[34][0]),sx,2*sz]))
+stair1 = STRUCT([largeStep,flight1,flight2])
+
+flight3 = T([1,2,3])([U[28][0],U[28][1],(5.65-sz*2)])(flight2origin)
+flight4 = T([1,2,3])([U[29][0],U[29][1]-.27*15,(.1+sz*14)])(flight1origin)
+largeStep = T(2)(U[30][1]-U[35][1]+sx)(largeStep)
+stair2 = STRUCT([flight3,flight4,largeStep])
 
 """ Costruzione seconda parte del podio """
 lines = lines2lines("podio.lines")
@@ -447,6 +434,6 @@ c8 = STRUCT([T([1,2,3])([P[5][0],P[5][1],5.77])(c8),
 	T([1,2,3])([P[5][0]+.2,P[5][1]-.2,5.65])(p8)])
 
 cornicione = STRUCT([c1,c2,c3,c4,c5,c6,c7,c8])
-podium = STRUCT([upFloor,podium,cornicione,staircase1,staircase2,staircase3])
+podium = STRUCT([upFloor,podium,cornicione,staircase1,staircase2,staircase3,stair1,stair2])
 
 #VIEW(STRUCT([upLevel, lowerLevel, podium]))
