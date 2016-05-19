@@ -1,6 +1,7 @@
 #! /usr/bin/python
 
 from larlib import *
+from myfun import *
 
 """ Costruzione della struttra di travi del tetto tramite pyplasm """
 V=[[0,0],[0,64.85]]
@@ -115,18 +116,18 @@ pillarsE = STRUCT([tops, pillarsE])
 
 """ Costruzione del telaio """
 lines = lines2lines("telaiopt.lines")
-H,FH,EH,poly = larFromLines(lines)
-HH = AA(LIST)(range(len(H)))
-##VIEW(larModelNumbering(1,1,1)(H,[HH,EH,FH],STRUCT(MKPOLS([H,EH])),0.1)) 
-H = (mat(H)-H[60]).tolist()
-sx = 50.15/H[53][0]; sy = 8.4/H[53][1]
+Z,FZ,EZ,poly = larFromLines(lines)
+HH = AA(LIST)(range(len(Z)))
+##VIEW(larModelNumbering(1,1,1)(Z,[HH,EZ,FZ],STRUCT(MKPOLS([Z,EZ])),0.1)) 
+Z = (mat(Z)-Z[60]).tolist()
+sx = 50.15/Z[53][0]; sy = 8.4/Z[53][1]
 scaling = mat([[sx,0,0],[0,sy,0]])
-H = ( mat(H)*scaling ).tolist()
+Z = ( mat(Z)*scaling ).tolist()
 
-vetriHPC = STRUCT(MKPOLS((H,FH)))
-##VIEW(EXPLODE(1.2,1.2,1.2)(MKPOLS([H,FH])))
+vetriHPC = STRUCT(MKPOLS((Z,FZ)))
+##VIEW(EXPLODE(1.2,1.2,1.2)(MKPOLS([Z,FZ])))
 vetri = T(3)(0.075)(OFFSET([0.0,0.0,0.03])(vetriHPC))
-telaioHPC = STRUCT(MKPOLS([H,EH]))
+telaioHPC = STRUCT(MKPOLS([Z,EZ]))
 telaioN = STRUCT([vetri,COLOR(GRAY)(OFFSET([0.1,0.2,0.25])(telaioHPC))])
 telaioN = R([2,3])(PI/2)(telaioN) ##mi sposto su x,z in modo da "estrudere" su y
 telaioS = telaioO = telaioN
@@ -134,21 +135,21 @@ telaioS = T([1,2])([0.25,50.25])(telaioS)
 telaioO = R([1,2])(PI/2)(telaioO)
 
 lines = lines2lines("telaiopt2.lines")
-H,FH,EH,poly = larFromLines(lines)
-HH = AA(LIST)(range(len(H)))
-##VIEW(larModelNumbering(1,1,1)(H,[HH,EH,FH],STRUCT(MKPOLS([H,EH])),0.1)) 
-H = (mat(H)-H[20]).tolist()
-sx = 50.15/H[80][0]; sy = 8.4/H[80][1]
+Z,FZ,EZ,poly = larFromLines(lines)
+HH = AA(LIST)(range(len(Z)))
+##VIEW(larModelNumbering(1,1,1)(Z,[HH,EZ,FZ],STRUCT(MKPOLS([Z,EZ])),0.1)) 
+Z = (mat(Z)-Z[20]).tolist()
+sx = 50.15/Z[80][0]; sy = 8.4/Z[80][1]
 scaling = mat([[sx,0,0],[0,sy,0]])
-H = ( mat(H)*scaling ).tolist()
+Z = ( mat(Z)*scaling ).tolist()
 
-vetriHPC = STRUCT(MKPOLS((H,FH)))
-##VIEW(EXPLODE(1.2,1.2,1.2)(MKPOLS([H,FH])))
+vetriHPC = STRUCT(MKPOLS((Z,FZ)))
+##VIEW(EXPLODE(1.2,1.2,1.2)(MKPOLS([Z,FZ])))
 vetri = T(3)(0.11)(OFFSET([0.0,0.0,0.03])(vetriHPC))
 doorsEdges = [43,69,35,12,67,4,109,40,102,28]
-doorsHPC = STRUCT(MKPOLS([H,[EH[i] for i in doorsEdges]]))
-talaioEdges = set(range(len(EH))).difference(doorsEdges)
-telaioHPC = STRUCT(AA(POLYLINE)([[H[EH[e][0]],H[EH[e][1]]] for e in talaioEdges]))
+doorsHPC = STRUCT(MKPOLS([Z,[EZ[i] for i in doorsEdges]]))
+talaioEdges = set(range(len(EZ))).difference(doorsEdges)
+telaioHPC = STRUCT(AA(POLYLINE)([[Z[EZ[e][0]],Z[EZ[e][1]]] for e in talaioEdges]))
 doors = OFFSET([0.2,0.25,0.25])(doorsHPC)
 telaioE = OFFSET([0.1,0.2,0.25])(telaioHPC)
 telaioE = STRUCT([COLOR(GRAY)(STRUCT([doors,telaioE])),vetri])
@@ -363,6 +364,17 @@ staircase1 = STRUCT([lastStep,steps,ramps1,ramps2])
 
 #VIEW(STRUCT([basementFloors,frameAndWindows,basementWalls,bigColumns,smallColumns, staircase1,upFloor]))
 
+""" Costruzione scale interne """
+sy=(U[32][0]-U[34][0])/2; sz=5.55/32
+flight1 = createSteps(15,[.27,sy,sz])
+tensor = MAT([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,TAN(PI/6),0,1]])
+flight2 = R([1,2])(-PI/2)(flight1)
+flight1 = T([1,2,3])([U[34][0]+sy,U[34][1],(5.65-sz*2)])(R([1,2])(PI/2)(flight1))
+flight2 = T([1,2,3])([U[34][0]+sy,U[34][1]+.27*15,(.1+sz*14)])(flight2)
+sx = (U[35][1]-U[34][1])-.27*15
+largeStep = T([1,2,3])([U[35][0],U[35][1]-sx,.1+sz*15])(CUBOID([(U[32][0]-U[34][0]),sx,sz]))
+
+
 """ Costruzione seconda parte del podio """
 lines = lines2lines("podio.lines")
 P,FP,EP,polygons = larFromLines(lines)
@@ -377,24 +389,6 @@ podium = PROD([podium,INTERVALS(5.65)(1)])
 #VIEW(STRUCT([podium,basementWalls,upFloor]))
 
 """ Costruzione delle scalinate """
-
-def createFilledSteps(N,dimensioni):
-    sx,sy,sz = dimensioni
-    V,FV=larCuboids([1,1])
-    step = S([1,2])([sx,sy])(STRUCT(MKPOLS((V,FV))))
-    step =  steps = PROD([step,INTERVALS(sz)(1)])
-    for i in range(1,N):
-        stepp = T(3)(-sz*i)(S(1)(1+i)(step))
-        steps = STRUCT([steps,stepp])
-    return steps
-
-def createSteps(N,dimensioni):
-    sx,sy,sz = dimensioni
-    V,FV=larCuboids([1,1])
-    step = S([1,2])([sx,sy])(STRUCT(MKPOLS((V,FV))))
-    step =  steps = PROD([step,INTERVALS(sz)(1)])
-    steps = STRUCT(NN(N)([step, T([1,3])([sx,-sz])]))
-    return steps
 
 sx = (P[7][0]-P[1][0])/15
 sy = P[7][1]-P[8][1]
@@ -452,7 +446,7 @@ p8 = STRUCT(NN(2)([R([1,2])(-PI/2)(CUBOID([.8, (P[11][0]-P[5][0])-1.2 , .12])), 
 c8 = STRUCT([T([1,2,3])([P[5][0],P[5][1],5.77])(c8), 
 	T([1,2,3])([P[5][0]+.2,P[5][1]-.2,5.65])(p8)])
 
-cornicione = STRUCT([ci for i in range(1,9)])
+cornicione = STRUCT([c1,c2,c3,c4,c5,c6,c7,c8])
 podium = STRUCT([upFloor,podium,cornicione,staircase1,staircase2,staircase3])
 
 #VIEW(STRUCT([upLevel, lowerLevel, podium]))
