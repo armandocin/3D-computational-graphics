@@ -180,7 +180,7 @@ submodel = STRUCT(MKPOLS((V,EV)))
 tallWallsEdges = [254,95,140,265,151,7,42,292,274,167,117,244,153,323,296,99,284,271,213,133,315,31]
 thickWallsEdges = [134,98,138,58,14,23,175,37,306,142,162,145,260,233,21,236,191,65,108,74,83,12,160,41,169,203,280,18,245,222,27,131,239,127,78,55,310,120,320,261,10,157,132,47,43,221,154,252,46,0,49,170,130,90,29,228]
 perimeterWallsEdges = [66,86,17]
-wallsEdges = set(range(len(EV))).difference(tallWallsEdges+[328]+thickWallsEdges+perimeterWallsEdges) #328 spigolo che devo sostituire con la vetrata
+wallsEdges = set(range(len(EV))).difference(tallWallsEdges+[328,72,94,231,139]+thickWallsEdges+perimeterWallsEdges) #328 spigolo che devo sostituire con la vetrata
 
 tallWallsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in tallWallsEdges]))
 thickWallsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in thickWallsEdges]))
@@ -195,7 +195,7 @@ perimeterWalls = COLOR(YELLOW)(OFFSET([.5,.5])(perimeterWallsHPCs))
 
 """ Estrusione muri """
 walls = PROD([ walls, INTERVALS(4)(1) ])
-tallWalls = T(3)(-2.5)(PROD([ tallWalls, INTERVALS(6.5)(1) ]))
+tallWalls = T(3)(-2.3)(PROD([ tallWalls, INTERVALS(6.3)(1) ]))
 thickWalls = PROD([ thickWalls, INTERVALS(4)(1) ])
 perimeterWalls = PROD([ perimeterWalls, INTERVALS(5.65)(1) ])
 
@@ -221,7 +221,7 @@ C = (mat(C)+ [(V[309][0]+1.4),7.4]).tolist()
 #VIEW(larModelNumbering(1,1,1)(C,[CC,EC,FC],STRUCT(MKPOLS((C,EC))),0.1))
 tallColumns = (C,[FC[k] for k in [112,113,124,125,40,41,52,53]])
 regularColumns = (C, [FC[k] for k in set(range(len(FC))).difference([112,113,124,125,40,41,52,53])])
-tallColumnsHPCs = T(3)(-2.4)(PROD([ STRUCT(MKPOLS(tallColumns)), INTERVALS(6.5)(1) ]))
+tallColumnsHPCs = T(3)(-2.2)(PROD([ STRUCT(MKPOLS(tallColumns)), INTERVALS(6.2)(1) ]))
 regularColumnsHPCs = PROD([ STRUCT(MKPOLS(regularColumns)), INTERVALS(4)(1) ])
 smallColumns = STRUCT([regularColumnsHPCs,tallColumnsHPCs])
 
@@ -244,6 +244,12 @@ bigColumnsVertical = PROD([ bigColumnsVertical, INTERVALS(4)(1) ])
 bigColumnsOriz = PROD([ bigColumnsOriz, INTERVALS(4)(1) ])
 bigColumns = STRUCT([bigColumnsOriz,bigColumnsVertical])
 
+""" Costruzione scale interne """
+sx = 0.32; sy = V[95][1]-V[257][1]-.5; sz = 2.2/12
+stairsOrigin = R([1,2])(PI)(createSteps(11,[sx,sy,sz],True))
+stairs1 = T([1,2,3])(V[95]+[-2*sz])(stairsOrigin)
+stairs2 = T([1,2,3])(V[231]+[-2*sz])(stairsOrigin)
+
 """ Pavimento del Seminterrato """
 lines = lines2lines("pavimento-semint.lines")
 W,FW,EW,poly = larFromLines(lines)
@@ -254,9 +260,9 @@ W = ((mat(W) - W[1])*108).tolist()
 
 floors = (W,[FW[k] for k in range(len(FW)) if k!=5 and k!=4])
 lower_floors = DIFFERENCE([STRUCT(MKPOLS([W,FW])),STRUCT(MKPOLS(floors))])
-lower_floors = T(3)(-2.5)(PROD([ (lower_floors), INTERVALS(.1)(1) ]))
-muri_dietro_scale = OFFSET([.3,0])(STRUCT(MKPOLS((W,[EW[5],EW[15]])))) ##muri dietro le scale
-muri_dietro_scale = T(3)(-2.5)(PROD([muri_dietro_scale, INTERVALS(2.5)(1) ]))
+lower_floors = T(3)(-2.3)(PROD([ (lower_floors), INTERVALS(.1)(1) ]))
+muri_dietro_scale = OFFSET([.5,0])(STRUCT(MKPOLS((W,[EW[5],EW[15]])))) ##muri dietro le scale
+muri_dietro_scale = T(3)(-2.3)(PROD([muri_dietro_scale, INTERVALS(2.3)(1) ]))
 regular_floors = PROD([STRUCT(MKPOLS(floors)), INTERVALS(.1)(1) ])
 basementFloors = STRUCT([regular_floors,lower_floors,muri_dietro_scale])
 
@@ -436,4 +442,4 @@ c8 = STRUCT([T([1,2,3])([P[5][0],P[5][1],5.77])(c8),
 cornicione = STRUCT([c1,c2,c3,c4,c5,c6,c7,c8])
 podium = STRUCT([upFloor,podium,cornicione,staircase1,staircase2,staircase3,stair1,stair2])
 
-#VIEW(STRUCT([upLevel, lowerLevel, podium]))
+VIEW(STRUCT([upLevel, lowerLevel, podium]))
