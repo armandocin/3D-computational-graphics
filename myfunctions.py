@@ -35,10 +35,15 @@ def createFilledSteps(N,dimensioni):
         steps = STRUCT([steps,stepp])
     return steps
 
-def createSteps(N,dimensioni):
+def createSteps(N,dimensioni,underStairs=False):
     sx,sy,sz = dimensioni
     V,FV=larCuboids([1,1])
     step = S([1,2])([sx,sy])(STRUCT(MKPOLS((V,FV))))
     step =  steps = PROD([step,INTERVALS(sz)(1)])
     steps = STRUCT(NN(N)([step, T([1,3])([sx,-sz])]))
+    if(underStairs==True):
+		base=CUBOID([sx*(N-1),sy,sz])
+		m=MAT([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,-(sz*N)*1./(sx*N),0,1]])
+		filled=m(base)	   
+		return STRUCT([filled,steps])	
     return steps
