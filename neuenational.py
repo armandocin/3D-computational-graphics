@@ -128,11 +128,10 @@ vetriHPC = STRUCT(MKPOLS((Z,FZ)))
 ##VIEW(EXPLODE(1.2,1.2,1.2)(MKPOLS([Z,FZ])))
 vetri = T(3)(0.075)(OFFSET([0.0,0.0,0.03])(vetriHPC))
 telaioHPC = STRUCT(MKPOLS([Z,EZ]))
-telaioN = STRUCT([vetri,COLOR(GRAY)(OFFSET([0.1,0.2,0.25])(telaioHPC))])
+telaioN = STRUCT([vetri,OFFSET([0.1,0.2,0.25])(telaioHPC)])
 telaioN = R([2,3])(PI/2)(telaioN) ##mi sposto su x,z in modo da "estrudere" su y
-telaioS = telaioO = telaioN
-telaioS = T([1,2])([0.25,50.25])(telaioS)
-telaioO = R([1,2])(PI/2)(telaioO)
+telaioS = T([1,2])([0.25,50.25])(telaioN)
+telaioO = R([1,2])(PI/2)(telaioN)
 
 lines = lines2lines("telaiopt2.lines")
 Z,FZ,EZ,poly = larFromLines(lines)
@@ -152,7 +151,7 @@ talaioEdges = set(range(len(EZ))).difference(doorsEdges)
 telaioHPC = STRUCT(AA(POLYLINE)([[Z[EZ[e][0]],Z[EZ[e][1]]] for e in talaioEdges]))
 doors = OFFSET([0.2,0.25,0.25])(doorsHPC)
 telaioE = OFFSET([0.1,0.2,0.25])(telaioHPC)
-telaioE = STRUCT([COLOR(GRAY)(STRUCT([doors,telaioE])),vetri])
+telaioE = STRUCT([STRUCT([doors,telaioE]),vetri])
 telaioE = R([2,3])(PI/2)(telaioE)
 telaioE = T([1,2])([50.25,-0.05])(R([1,2])(PI/2)(telaioE))
 
@@ -179,25 +178,25 @@ submodel = STRUCT(MKPOLS((V,EV)))
 """ Separazione tipi di muro """
 tallWallsEdges = [254,95,140,265,151,7,42,292,274,167,117,244,153,323,296,99,284,271,213,133,315,31]
 thickWallsEdges = [134,98,138,58,14,23,175,37,306,142,162,145,260,233,21,236,191,65,108,74,83,12,160,41,169,203,280,18,245,222,27,131,239,127,78,55,310,120,320,261,10,157,132,47,43,221,154,252,46,0,49,170,130,90,29,228]
-perimeterWallsEdges = [66,86,17]
-wallsEdges = set(range(len(EV))).difference(tallWallsEdges+[328,72,94,231,139]+thickWallsEdges+perimeterWallsEdges) #328 spigolo che devo sostituire con la vetrata
+gardenWallsEdges = [66,86,17]
+wallsEdges = set(range(len(EV))).difference(tallWallsEdges+[328,72,94,231,139]+thickWallsEdges+gardenWallsEdges) #328 spigolo che devo sostituire con la vetrata
 
 tallWallsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in tallWallsEdges]))
 thickWallsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in thickWallsEdges]))
-perimeterWallsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in perimeterWallsEdges]))
+gardenWallsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in gardenWallsEdges]))
 wallsHPCs = STRUCT(AA(POLYLINE)([[V[EV[e][0]],V[EV[e][1]]] for e in wallsEdges]))
 
 """ Faccio l'OFFSET """
 walls = OFFSET([.3,.3])(wallsHPCs)
 tallWalls = COLOR(CYAN)(OFFSET([.5,.5])(tallWallsHPCs))
 thickWalls = COLOR(GREEN)(OFFSET([.5,.5])(thickWallsHPCs))
-perimeterWalls = COLOR(YELLOW)(OFFSET([.5,.5])(perimeterWallsHPCs))
+gardenWalls = COLOR(YELLOW)(OFFSET([.5,.5])(gardenWallsHPCs))
 
 """ Estrusione muri """
 walls = PROD([ walls, INTERVALS(4)(1) ])
 tallWalls = T(3)(-2.3)(PROD([ tallWalls, INTERVALS(6.3)(1) ]))
 thickWalls = PROD([ thickWalls, INTERVALS(4)(1) ])
-perimeterWalls = PROD([ perimeterWalls, INTERVALS(5.65)(1) ])
+gardenWalls = PROD([ gardenWalls, INTERVALS(5.65)(1) ])
 
 """ Creazioni pannelli seminterrato """
 filename = "pannelli-semint.lines"
@@ -212,7 +211,7 @@ U = (mat(U) + [23.6088, 21.481199999999998]).tolist()
 basementPanels =  COLOR(YELLOW)(OFFSET([.2,.2])(STRUCT(MKPOLS([U,EU]))))
 basementPanels = PROD([ basementPanels, INTERVALS(3)(1) ])
 
-basementWalls = STRUCT([walls, thickWalls, basementPanels,tallWalls, perimeterWalls])
+basementWalls = STRUCT([walls, thickWalls, basementPanels,tallWalls, gardenWalls])
 
 """ Creazione colonne piccole """
 C,FC,EC = createColumns([12,12],[7.2,7.2],.5)
@@ -305,20 +304,7 @@ upFloor = T(3)(4.15)(PROD([upFloorHPC, INTERVALS(1.5)(1)]))
 upFloor=STRUCT([basementCeiling,upFloor])
 
 """
-stairsmodel = SKEL_1(STRUCT(MKPOLS((W,FW))))
-FW = sorted(FW,key=lambda cell: CCOMB([W[k] for k in cell])[0]) #Riordino le facce delle scale
-stairsmodel = SKEL_1(STRUCT(MKPOLS((W,FW))))
-
-VIEW(larModelNumbering(1,1,1)(W,[AA(LIST)(range(len(W))),FW],stairsmodel,2))
-
-staircase1struct = Struct([([W[k] for k in cell],[range(len(cell))]) for cell in [FW[i] for i in range(8)]]) 
-scalinata1 = embedStruct(1)(staircase1struct)
-staircase1 = CAT(DISTL([t(0,0,-(2*0.16)),scalinata1.body]))
-staircase1 = struct2lar(Struct(staircase1))
-VIEW(STRUCT(MKPOLS(staircase1)))
-lastStep = (W,[FW[8]])
-lastStep = T(3)(-1.5)(PROD([STRUCT(MKPOLS(lastStep)), INTERVALS(0.06)(1)]))
-staircase1 = larModelProduct([staircase1,larQuote1D([0.16])])
+scalinata esterna 1
 """
 sx = (U[10][0]-U[7][0])/8;sy=U[7][1]-U[1][1];sz=1.44/8
 steps = createSteps(8,[sx,sy,sz])
@@ -416,13 +402,13 @@ staircase3 = STRUCT([staircase3,middleStep,last2steps])
 
 """ Creazione cornicione del podio """
 c1 = STRUCT([T([1,3])([20,5.77])(CUBOID([1.2, 94.6328, .5])), 
-	T([1,2,3])([20.2,0.2,5.65])(CUBOID([.8,94.2328,.12]))]) #U[5] = [20.0, 0.0]
+	T([1,2,3])([20.2,0.2,5.65])(CUBOID([.8,94.2328,.12]))]) #U[3] = [20.0, 0.0]
 c2 = STRUCT([T([1,2,3])([21.2,1.2,5.77])(R([1,2])(-PI/2)(CUBOID([1.2, 81.09520387487387, .5]))), 
-	T([1,2,3])([21,1,5.65])(R([1,2])(-PI/2)(CUBOID([.8, 81.09520387487387, .12])))]) #U[4][0]-U[5][0] = 82.29520387487388
+	T([1,2,3])([21,1,5.65])(R([1,2])(-PI/2)(CUBOID([.8, 81.09520387487387, .12])))]) #U[12][0]-U[3][0] = 82.29520387487388
 c3 = STRUCT([T([1,2,3])([21.2,94.6328,5.77])(R([1,2])(-PI/2)(CUBOID([1.2, 20.636420209853284, .5]))), 
 	T([1,2,3])([21,(94.6328-.2),5.65])(R([1,2])(-PI/2)(CUBOID([.8, 20.636420209853284, .12])))]) #P[8][0]-U[2][0] = 20.636420209853284
-c4 = STRUCT([T([1,2,3])([U[24][0]-1.2,(U[24][1]+1.2),5.77])(R([1,2])(-PI/2)(CUBOID([1.2, P[3][0]-U[24][0], .5]))), 
-	T([1,2,3])([U[24][0]-1,(U[24][1]+1),5.65])(R([1,2])(-PI/2)(CUBOID([.8, P[3][0]-U[24][0], .12])))]) #U[24]=[93.92053529767912, 10.952958789101919] P[3][0]-U[24][0] = 36.26825531652128
+c4 = STRUCT([T([1,2,3])([U[8][0]-1.2,(U[8][1]+1.2),5.77])(R([1,2])(-PI/2)(CUBOID([1.2, P[3][0]-U[8][0], .5]))), 
+	T([1,2,3])([U[8][0]-1,(U[8][1]+1),5.65])(R([1,2])(-PI/2)(CUBOID([.8, P[3][0]-U[8][0], .12])))]) #U[8]=[93.92053529767912, 10.952958789101919] P[3][0]-U[24][0] = 36.26825531652128
 c5 = STRUCT([T([1,2,3])([P[3][0]-1.2,P[3][1],5.77])(CUBOID([1.2, P[23][1]-P[3][1], .5])), 
 	T([1,2,3])([P[3][0]-1,P[3][1]+.2,5.65])(CUBOID([.8,(P[23][1]-P[3][1])-.4,.12]))]) #P[23][1]-P[3][1] = 
 c6 = STRUCT([T([1,2,3])([P[9][0]-1.2,P[9][1],5.77])(CUBOID([1.2, P[17][1]-P[9][1], .5])), 
