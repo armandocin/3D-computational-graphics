@@ -337,18 +337,16 @@ tensor = MAT([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,-tanBeta,0,1]])
 underStair = tensor(CUBOID([.27*15,sy,sz]))
 sideStair = STRUCT(NN(2)([tensor(CUBOID([.27*15,.05,sz*2])),T(2)(sy-.05)]))
 flight1origin = R([1,2])(PI/2)(STRUCT([T(2)(.05)(flight1origin),underStair,sideStair]))
-
 flight2origin = R([1,2])(-PI)(flight1origin)
+
 flight1 = T([1,2,3])([U[18][0]+sy,U[18][1],(5.65-sz*2)])(flight1origin)
 flight2 = T([1,2,3])([U[18][0]+sy,U[18][1]+.27*15,(.1+sz*14)])(flight2origin)
 sx = (U[19][1]-U[18][1])-.27*15
 largeStep = T([1,2,3])([U[19][0],U[19][1]-sx,(.1+sz*15)-sz])(CUBOID([(U[20][0]-U[18][0]),sx,2*sz]))
-stair1 = STRUCT([largeStep,flight1,flight2])
 
 flight3 = T([1,2,3])([U[14][0],U[14][1],(5.65-sz*2)])(flight2origin)
 flight4 = T([1,2,3])([U[15][0],U[15][1]-.27*15,(.1+sz*14)])(flight1origin)
 largeStep = T(2)(U[16][1]-U[19][1]+sx)(largeStep)
-stair2 = STRUCT([flight3,flight4,largeStep])
 
 """ Ringhiera """
 paletto = CUBOID([.04,.04,1])
@@ -376,14 +374,30 @@ verticalRail = STRUCT(NN(2)([STRUCT(NN(2)([verticalRail,T(3)(-.7)])),T(1)(dx*3)]
 verticalRail = T([1,2,3])([U[18][0]-.04,U[18][1]-.04,6.65])(verticalRail)
 
 railing1 = STRUCT([paletti,palettiX,palettiY,orizontalRail2,orizontalRail,verticalRail])
-railing2 = T(2)(U[14][1])(S(2)(-1)(T(2)(-U[18][1])(railing1)))
 
+paletto2 = CUBOID([.04,.04,1.02])
+palettiS = STRUCT(NN(4)([T(2)((.27*15-.08)/4),paletto]))
+railingS = T(3)(1)(STRUCT(NN(2)([CUBOID([.04,.27*15-0.04,.02]),T(3)(-.7)])))
+tensor = MAT([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,-tanBeta,1]])
+handrail = T(2)(.04)(tensor(STRUCT([palettiS,railingS])))
+handrailA = T([1,2,3])([U[18][0],U[18][1]-.04,5.65])(STRUCT([paletto2,handrail]))
+handrailB = T([1,2,3])([U[18][0]+(2*dx2-.04),U[18][1]-.04,5.65])(handrail)
+handrailC = STRUCT([T([1,2])([-.04,-.04])(paletto2),R([1,2])(PI)(handrail)])
+handrailC = T([1,2,3])([U[18][0]+(2*dx2+.04),U[18][1]+(.27*15)+.04,(.1+sz*16)])(handrailC)
+
+handrail1 = STRUCT([handrailA,handrailB,handrailC,railing1])
+handrail2 = T(2)(U[14][1])(S(2)(-1)(T(2)(-U[18][1])(handrail1)))
+
+stair1 = STRUCT([largeStep,flight1,flight2,handrail1])
+stair2 = STRUCT([flight3,flight4,largeStep,handrail2])
+
+"""
 palettiS = STRUCT(NN(5)([paletto, T([2,3])([1,-tanBeta])]))
 palettiS = T([1,2,3])([U[18][0],U[18][1]-.04,5.65])(palettiS)
 railingS = tensor(CUBOID([.04,.27*15,.02]))
 railingS = STRUCT(NN(2)([railingS,T(3)(-.7)]))
 railingS = T([1,2,3])([U[18][0],U[18][1],6.65])(railingS)
-
+"""
 """ Costruzione seconda parte del podio """
 lines = lines2lines("podio.lines")
 P,FP,EP,polygons = larFromLines(lines)
