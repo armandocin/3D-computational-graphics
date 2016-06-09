@@ -47,3 +47,12 @@ def createSteps(N,dimensioni,underStairs=False):
 		filled=m(base)	   
 		return STRUCT([filled,steps])	
     return steps
+
+def exportObjs(structs):
+	k=0
+	for struct in structs:
+		b = Plasm.getBatches(struct)
+		Batch.saveObj("obj"+str(k)+".obj",b)
+		k+=1
+
+		 
