@@ -27,10 +27,10 @@ coverHPC = COLOR(GRAY)(STRUCT(MKPOLS([CT,FC])))
 #VIEW(STRUCT([coverHPC,beamsHPC]))
 
 """ griglia interna """
-V,FV = larCuboids([8,8])
+V,FV = larCuboids([4,4])
 V,EV = larCuboidsFacets([V,FV])
 trasl = 2*3.577 +.25 + .107
-V = (mat(V)*.405).tolist()
+V = (mat(V)*.810).tolist()
 V = (mat(V) + [trasl,trasl]).tolist()
 ##VIEW(STRUCT(MKPOLS((V,EV))))
 smallGrid = T(3)(8.75)(STRUCT(MKPOLS((V,EV))))
@@ -124,9 +124,9 @@ sx = 50.15/Z[53][0]; sy = 8.4/Z[53][1]
 scaling = mat([[sx,0,0],[0,sy,0]])
 Z = ( mat(Z)*scaling ).tolist()
 
-vetriHPC = STRUCT(MKPOLS((Z,FZ)))
+#vetriHPC = STRUCT(MKPOLS((Z,FZ)))
 ##VIEW(EXPLODE(1.2,1.2,1.2)(MKPOLS([Z,FZ])))
-vetri1 = T(3)(0.075)(OFFSET([0.0,0.0,0.03])(vetriHPC))
+#vetri1 = T(3)(0.075)(OFFSET([0.0,0.0,0.03])(vetriHPC))
 telaioHPC = STRUCT(MKPOLS([Z,EZ]))
 telaioN = STRUCT([OFFSET([0.1,0.2,0.25])(telaioHPC)])
 telaioN = R([2,3])(PI/2)(telaioN) ##mi sposto su x,z in modo da "estrudere" su y
@@ -142,9 +142,9 @@ sx = 50.15/Z[80][0]; sy = 8.4/Z[80][1]
 scaling = mat([[sx,0,0],[0,sy,0]])
 Z = ( mat(Z)*scaling ).tolist()
 
-vetriHPC = STRUCT(MKPOLS((Z,FZ)))
+#vetriHPC = STRUCT(MKPOLS((Z,FZ)))
 ##VIEW(EXPLODE(1.2,1.2,1.2)(MKPOLS([Z,FZ])))
-vetri2 = T(3)(0.11)(OFFSET([0.0,0.0,0.03])(vetriHPC))
+#vetri2 = T(3)(0.11)(OFFSET([0.0,0.0,0.03])(vetriHPC))
 doorsEdges = [43,69,35,12,67,4,109,40,102,28]
 doorsHPC = STRUCT(MKPOLS([Z,[EZ[i] for i in doorsEdges]]))
 talaioEdges = set(range(len(EZ))).difference(doorsEdges)
@@ -178,7 +178,7 @@ submodel = STRUCT(MKPOLS((V,EV)))
 """ Separazione tipi di muro """
 tallWallsEdges = [254,95,140,265,151,7,42,292,274,167,117,244,153,323,296,99,284,271,213,133,315,31]
 thickWallsEdges = [134,98,138,58,14,23,175,37,306,142,162,145,260,233,21,236,191,65,108,74,83,12,160,41,169,203,280,18,245,222,27,131,239,127,78,55,310,120,320,261,10,157,132,47,43,221,154,252,46,0,49,170,130,90,29,228]
-perimeterWallsEdges = [235,79,116,291,211,22,281,146,220,192,276,176,87,204,208,307,225,297,224,96,247,180,165,311,107,89,45,88,19]
+perimeterWallsEdges = [225,297,224,96,247,180,165,307,235,79,116,291,211,22,281,146,220,192,276,176,87,204,208,311,107,89,45,88,19]
 gardenWallsEdges = [66,86,17]
 wallsEdges = set(range(len(EV))).difference(perimeterWallsEdges+tallWallsEdges+[328,72,94,231,139]+thickWallsEdges+gardenWallsEdges) #328 spigolo che devo sostituire con la vetrata
 
@@ -197,7 +197,7 @@ gardenWalls = COLOR(YELLOW)(OFFSET([.5,.5])(gardenWallsHPCs))
 
 """ Estrusione muri """
 walls = PROD([ walls, INTERVALS(4)(1) ])
-perimeterWalls = PROD([ perimeterWalls, INTERVALS(4)(1) ])
+perimeterWalls = PROD([ perimeterWalls, INTERVALS(4.15)(1) ])
 tallWalls = T(3)(-2.3)(PROD([ tallWalls, INTERVALS(6.3)(1) ]))
 thickWalls = PROD([ thickWalls, INTERVALS(4)(1) ])
 gardenWalls = PROD([ gardenWalls, INTERVALS(5.65)(1) ])
@@ -273,13 +273,13 @@ lines = lines2lines("telaio-semint.lines")
 P,FP,EP,polygons = larFromLines(lines)
 #VIEW(larModelNumbering(1,1,1)(P,[AA(LIST)(range(len(P))),EP,FP],STRUCT(MKPOLS((P,EP))),0.1))
 P = (mat(P)-P[71]).tolist()
-sx = 93.4328/P[2][0]; sy = 3.75/P[2][1]
+sx = 93.5328/P[2][0]; sy = 3.75/P[2][1]
 scaling = mat([[sx,0,0],[0,sy,0]])
 P = ( mat(P)*scaling ).tolist()
 
-glassWallsHPC = STRUCT(MKPOLS((P,FP)))
-vetri3 = T(3)(0.11)(OFFSET([0.0,0.0,0.03])(glassWallsHPC))
-frame = OFFSET([.2,.25,.25])(STRUCT(MKPOLS([P,EP])))
+#glassWallsHPC = STRUCT(MKPOLS((P,FP)))
+#vetri3 = T(3)(0.11)(OFFSET([0.0,0.0,0.03])(glassWallsHPC))
+frame = OFFSET([.1,.25,.25])(STRUCT(MKPOLS([P,EP])))
 frameAndWindows = R([2,3])(PI/2)(STRUCT([COLOR(GRAY)(frame)]))
 frameAndWindows = T([1,2])([20.4,94.1328])(R([1,2])(-PI/2)(frameAndWindows))
 
@@ -302,9 +302,8 @@ staircase1 = (U,[FU[k] for k in range(4)])
 upFloorHPC = DIFFERENCE([STRUCT(MKPOLS((U,FU))), STRUCT([STRUCT(MKPOLS(staircase1)),STRUCT(MKPOLS(stairsHoles))])])
 #VIEW(EXPLODE(1.2,1.2,1.2)(MKPOLS(staircase1)))
 
-#upFloor = OFFSET([.3,.3])(upFloorHPC)
 upFloor = T(3)(4.15)(PROD([upFloorHPC, INTERVALS(1.5)(1)]))
-#upFloor=STRUCT([basementCeiling,upFloor])
+upFloor=STRUCT([basementCeiling,upFloor])
 
 """
 scalinata esterna 1
@@ -345,11 +344,11 @@ flight2origin = R([1,2])(-PI)(flight1origin)
 flight1 = T([1,2,3])([U[18][0]+sy,U[18][1],(5.65-sz*2)])(flight1origin)
 flight2 = T([1,2,3])([U[18][0]+sy,U[18][1]+.27*15,(.1+sz*14)])(flight2origin)
 sx = (U[19][1]-U[18][1])-.27*15
-largeStep = T([1,2,3])([U[19][0],U[19][1]-sx,(.1+sz*15)-sz])(CUBOID([(U[20][0]-U[18][0]),sx,2*sz]))
+largeStep1 = T([1,2,3])([U[19][0],U[19][1]-sx,(.1+sz*15)-sz])(CUBOID([(U[20][0]-U[18][0]),sx,2*sz]))
 
 flight3 = T([1,2,3])([U[14][0],U[14][1],(5.65-sz*2)])(flight2origin)
 flight4 = T([1,2,3])([U[15][0],U[15][1]-.27*15,(.1+sz*14)])(flight1origin)
-largeStep = T(2)(U[16][1]-U[19][1]+sx)(largeStep)
+largeStep = T(2)(U[16][1]-U[19][1]+sx)(largeStep1)
 
 """ Ringhiera """
 paletto = CUBOID([.04,.04,1])
@@ -391,7 +390,7 @@ handrailC = T([1,2,3])([U[18][0]+(2*dx2+.04),U[18][1]+(.27*15)+.04,(.1+sz*16)])(
 handrail1 = STRUCT([handrailA,handrailB,handrailC,railing1])
 handrail2 = T(2)(U[14][1])(S(2)(-1)(T(2)(-U[18][1])(handrail1)))
 
-stair1 = STRUCT([largeStep,flight1,flight2])
+stair1 = STRUCT([largeStep1,flight1,flight2])
 stair2 = STRUCT([flight3,flight4,largeStep])
 
 """ Costruzione seconda parte del podio """
@@ -469,10 +468,10 @@ cornicione = STRUCT([c1,c2,c3,c4,c5,c6,c7,c8])
 podiumAll = STRUCT([upFloor,podium,cornicione,staircase1,staircase2,staircase3,stair1,stair2])
 
 VIEW(STRUCT([upLevel, lowerLevel, podiumAll]))
-
+"""
 hpcs = [roof, pillarsE, ductsE, panelsE, STRUCT([gardenWalls, perimeterWalls]) , STRUCT([basementPanels,walls,tallWalls,thickWalls,
  smallColumns,bigColumns]),basementFloors, basementCeiling, STRUCT([podium,upFloor]),
   STRUCT([staircase1,staircase2,staircase3]), STRUCT([stair1,stair2]),STRUCT([handrail1,handrail2]), cornicione, 
   STRUCT([telaio,frameAndWindows])] 
 
-exportObjs(hpcs)
+exportObjs(hpcs)"""
