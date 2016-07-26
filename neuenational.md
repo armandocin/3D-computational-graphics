@@ -68,11 +68,11 @@ Architettura
 ------
 \framesubtitle{Dimensioni}
 
-+ Ai due lati dell'ampio podio, ci sono due scalinate esterne che conducono al basamento in pietra di 110x105mt, mentre la scalinata in facciata conduce all’ingresso principale.
++ Ai due lati dell'ampio podio, ci sono due scalinate esterne che conducono al basamento in pietra di 108x105mt, mentre la scalinata in facciata conduce all’ingresso principale.
 
 + Per entrare al museo è necessario passare dalle scalinate ed attraversare quindi il piano terra, per poi scendere dall'interno al piano seminterrato dove sono tenute le mostre permanenti.
 
-+ La sala vetrata situata sopra il podio è una sala quadrata di 50.40x50.40 mt, alta 8.40 mt, la cui pianta è organizzata secondo un reticolo modulare di 3.6x3.6 mt.
++ La sala vetrata situata sopra il podio è una sala quadrata di 50.30x50.30 mt, alta 8.40 mt, la cui pianta è organizzata secondo un reticolo modulare di 3.6x3.6 mt.
 
 Interni
 ------
@@ -114,8 +114,8 @@ Dimensioni
 ||BASE(mt)|ALTEZZA(mt)|
 | --- |:----:|:------:|
 |Tetto|65x65|1.80|
-|Piano Terra|50.40x50.40|8.40|
-|Piano Semint.|110x105|4|
+|Piano Terra|50.30x50.30|8.40|
+|Piano Semint.|108x105|4|
 
 Riferimenti
 ------

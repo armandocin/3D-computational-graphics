@@ -25,7 +25,7 @@ cover = COLOR(GRAY)(cover)
 """ griglia interna """
 V,FV = larCuboids([4,4])
 V,EV = larCuboidsFacets([V,FV])
-trasl = 2*3.577 +.25 + .107
+trasl = 2*3.577 +.25 + .107 
 V = (mat(V)*.810).tolist()
 V = (mat(V) + [trasl,trasl]).tolist()
 ##VIEW(STRUCT(MKPOLS((V,EV))))
@@ -35,7 +35,7 @@ grid = STRUCT(NN(14)([smallGrid,T(1)((8*.416)+.25)]))
 grid = STRUCT(NN(14)([grid,T(2)((8*.416)+.25)]))
 ##VIEW(grid)
 
-roof = STRUCT([beams,coverHPC,grid])
+roof = STRUCT([beams,cover,grid])
 
 """ Mura Pianoterra """
 
@@ -193,7 +193,7 @@ gardenWalls = COLOR(YELLOW)(OFFSET([.5,.5])(gardenWallsHPCs))
 
 """ Estrusione muri """
 walls = PROD([ walls, INTERVALS(4)(1) ])
-perimeterWalls = PROD([ perimeterWalls, INTERVALS(4.15)(1) ])
+perimeterWalls = PROD([ perimeterWalls, INTERVALS(4)(1) ])
 tallWalls = T(3)(-2.3)(PROD([ tallWalls, INTERVALS(6.3)(1) ]))
 thickWalls = PROD([ thickWalls, INTERVALS(4)(1) ])
 gardenWalls = PROD([ gardenWalls, INTERVALS(5.65)(1) ])
@@ -226,18 +226,10 @@ smallColumns = STRUCT([regularColumnsHPCs,tallColumnsHPCs])
 
 """ Creazione colonne grandi """
 ##colonne grandi verticali
-C,FC = larCuboids([1,1])
-C = (mat(C)+ [61.1,21.1216]).tolist()
-columnsBV = [C,FC]
-bigColumnsVertical = STRUCT(NN(2)([STRUCT(MKPOLS(columnsBV)),T(1)(28.8)]))
-bigColumnsVertical = STRUCT(NN(2)([bigColumnsVertical,T(2)(64.8)]))
-#colonne grandi orizontali
-C,FC = larCuboids([1,1])
-C = (mat(C)+ [43.1,39.1216]).tolist()
-columnsBO = [C,FC]
-bigColumnsOriz = STRUCT(NN(2)([STRUCT(MKPOLS(columnsBO)),T(2)(28.8)]))
-bigColumnsOriz = STRUCT(NN(2)([bigColumnsOriz,T(1)(64.3)]))
-
+C,FC,EC = createColumns([2,2],[28.8,64.8])
+bigColumnsVertical = T([1,2])([61.1,21.1216])(STRUCT(MKPOLS((C,FC))))
+C,FC,EC = createColumns([2,2],[64.8,28.8])
+bigColumnsOriz = T([1,2])([43.05,39.122])(STRUCT(MKPOLS((C,FC))))
 bigColumnsVertical = PROD([ bigColumnsVertical, INTERVALS(4)(1) ])
 bigColumnsOriz = PROD([ bigColumnsOriz, INTERVALS(4)(1) ])
 bigColumns = STRUCT([bigColumnsOriz,bigColumnsVertical])
@@ -259,10 +251,12 @@ W = ((mat(W) - W[1])*108).tolist()
 floors = (W,[FW[k] for k in range(len(FW)) if k!=5 and k!=4])
 lower_floors = DIFFERENCE([STRUCT(MKPOLS([W,FW])),STRUCT(MKPOLS(floors))])
 lower_floors = T(3)(-2.3)(PROD([ (lower_floors), INTERVALS(.1)(1) ]))
-muri_dietro_scale = OFFSET([.5,0])(STRUCT(MKPOLS((W,[EW[5],EW[15]])))) ##muri dietro le scale
-muri_dietro_scale = T(3)(-2.3)(PROD([muri_dietro_scale, INTERVALS(2.3)(1) ]))
+walls_behind_stairs = OFFSET([.5,0])(STRUCT(MKPOLS((W,[EW[5],EW[15]])))) ##muri dietro le scale
+walls_behind_stairs = T(3)(-2.3)(PROD([walls_behind_stairs, INTERVALS(2.3)(1) ]))
 regular_floors = PROD([STRUCT(MKPOLS(floors)), INTERVALS(.1)(1) ])
-basementFloors = STRUCT([regular_floors,lower_floors,muri_dietro_scale])
+basementFloors = STRUCT([regular_floors,lower_floors])
+
+basementWalls = STRUCT([basementWalls,walls_behind_stairs])
 
 """ Costruzione telaio e vetrata seminterrato """
 lines = lines2lines("telaio-semint.lines")
@@ -275,12 +269,12 @@ P = ( mat(P)*scaling ).tolist()
 
 #glassWallsHPC = STRUCT(MKPOLS((P,FP)))
 #vetri3 = T(3)(0.11)(OFFSET([0.0,0.0,0.03])(glassWallsHPC))
-frame = OFFSET([.1,.25,.25])(STRUCT(MKPOLS([P,EP])))
-frameAndWindows = R([2,3])(PI/2)(STRUCT([COLOR(GRAY)(frame)]))
-frameAndWindows = T([1,2])([20.4,94.1328])(R([1,2])(-PI/2)(frameAndWindows))
+telaio_semint = OFFSET([.1,.25,.25])(STRUCT(MKPOLS([P,EP])))
+vetrata_semint = R([2,3])(PI/2)(STRUCT([COLOR(GRAY)(telaio_semint)]))
+vetrata_semint = T([1,2])([20.4,94.1328])(R([1,2])(-PI/2)(vetrata_semint))
 
-lowerLevel = STRUCT([basementFloors,frameAndWindows,basementWalls,bigColumns,smallColumns])
-#VIEW(STRUCT([basementFloors,frameAndWindows,basementWalls,bigColumns,smallColumns]))
+lowerLevel = STRUCT([basementFloors,vetrata_semint,basementWalls,bigColumns,smallColumns,stairs1,stairs2])
+#VIEW(STRUCT([basementFloors,vetrata_semint,basementWalls,bigColumns,smallColumns]))
 
 """ Costruzione pavimento podio/tetto seminterrato """
 lines = lines2lines("tetto-semint.lines")
