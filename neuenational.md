@@ -45,9 +45,17 @@ L'edificio è costruito interamente in:
 
 Architettura
 -----
-La caratteristica principale è, senza dubbio, l'atrio espositivo e la **piastra di acciaio** nero, spessa 1,8 m e di 65 m per lato, che forma il tetto, poggiata su otto **pilastri di acciaio cruciformi**. Essi sono disposti due per lato, in modo da lasciare gli angoli liberi. Questa struttura da l'impressione che il tetto galleggi nel vuoto, grazie anche alle pareti completamente in vetro. Il tetto è formato da un telaio a griglia di snelle travi in acciaio a doppia T.
+###Caratteristiche principali 
 
-\includegraphics[height=0.4\linewidth]{/home/armandocin/Immagini/"Neue Nationalgalerie"/pt_pilas1.jpg}
+1. l'atrio espositivo, con pareti interamente in vetro.
+
+2. il tetto, formato da 
+    + una **piastra di acciaio** nero, spessa 1,8 m e di 64,8 m per lato
+    + un telaio a griglia di snelle travi in acciaio a doppia T.
+    + poggiato su otto **pilastri di acciaio cruciformi** disposti due per lato, in modo da lasciare gli angoli liberi.  
+    Questa struttura da l'impressione che il tetto galleggi nel vuoto, grazie anche alle pareti completamente in vetro.
+
+\centering \includegraphics[height=0.25\linewidth]{/home/armandocin/Immagini/"Neue Nationalgalerie"/roofBeams.jpg}
 
 Architettura
 --------

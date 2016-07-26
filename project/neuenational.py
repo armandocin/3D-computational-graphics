@@ -6,25 +6,21 @@ from myfunctions import *
 """ Costruzione della struttra di travi del tetto tramite pyplasm """
 V=[[0,0],[0,64.85]]
 EV = [[0,1]]
-basetrave = OFFSET([.5,0])(STRUCT(MKPOLS([V,EV])))
-#VIEW(basetrave)
-basetrave = STRUCT(NN(2)([PROD([OFFSET([.5,0])(STRUCT(MKPOLS([V,EV]))),INTERVALS(.05)(1)]),T(3)(1.8)]))
-centrotrave = T(1)(.2)(PROD([OFFSET([.1,0])(STRUCT(MKPOLS([V,EV]))),INTERVALS(1.8)(1)]))
-#VIEW(STRUCT([basetrave,centrotrave]))
-trave = STRUCT([basetrave,centrotrave])
-traviX = STRUCT(NN(19)([trave,T(1)(3.575)]))
-traviY = T(1)(64.85)(R([1,2])(PI/2)(traviX))
-beams = T(3)(8.6)(STRUCT([traviY,traviX]))
+beambase = OFFSET([.5,0])(STRUCT(MKPOLS([V,EV])))
+#VIEW(beambase)
+beambase = STRUCT(NN(2)([PROD([OFFSET([.5,0])(STRUCT(MKPOLS([V,EV]))),INTERVALS(.05)(1)]),T(3)(1.8)]))
+beamcentre = T(1)(.2)(PROD([OFFSET([.1,0])(STRUCT(MKPOLS([V,EV]))),INTERVALS(1.8)(1)]))
+#VIEW(STRUCT([beambase,beamcentre]))
+beam = STRUCT([beambase,beamcentre])
+beamsX = STRUCT(NN(19)([beam,T(1)(3.575)])) #3.575 distanza tra inizio di una trave e inizio trave successiva(compresa larghez trave)
+beamsY = T(1)(64.85)(R([1,2])(PI/2)(beamsX))
+beams = T(3)(8.6)(STRUCT([beamsY,beamsX]))
 
 """ Costruzione della copertura del tetto """
-C,FC = larCuboids([1,1])
-C = (mat(C)*64.85).tolist()
-cover = larModelProduct([[C,FC],larQuote1D([.1])])
-C,FC = cover
-CT = (mat(C)+[0,0,10.45]).tolist() ##lo traslo di 10.25 ovvero 8.4 delle mura + 1.85 lo s spessore del muro
-coverHPC = COLOR(GRAY)(STRUCT(MKPOLS([CT,FC])))
-#VIEW(coverHPC)
-#VIEW(STRUCT([coverHPC,beamsHPC]))
+cover = T(3)(10.45)(CUBOID([ 64.85 , 64.85 , .1 ])) ##lo traslo di 10.25 ovvero 8.4 delle mura + 1.85 lo s spessore del tetto
+cover = COLOR(GRAY)(cover)
+#VIEW(cover)
+#VIEW(STRUCT([cover,beams]))
 
 """ griglia interna """
 V,FV = larCuboids([4,4])
