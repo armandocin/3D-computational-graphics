@@ -68,7 +68,7 @@ Architettura
 ------
 \framesubtitle{Dimensioni}
 
-+ Ai due lati dell'ampio podio, ci sono due scalinate esterne che conducono al basamento in pietra di 108x105mt, mentre la scalinata in facciata conduce all’ingresso principale.
++ Ai due lati dell'ampio podio, ci sono due scalinate esterne che conducono al basamento in pietra di circa 108x100mt, mentre la scalinata in facciata conduce all’ingresso principale.
 
 + Per entrare al museo è necessario passare dalle scalinate ed attraversare quindi il piano terra, per poi scendere dall'interno al piano seminterrato dove sono tenute le mostre permanenti.
 
@@ -113,9 +113,9 @@ Dimensioni
 -----
 ||BASE(mt)|ALTEZZA(mt)|
 | --- |:----:|:------:|
-|Tetto|65x65|1.80|
+|Tetto|64.85x64.85|1.80|
 |Piano Terra|50.30x50.30|8.40|
-|Piano Semint.|108x105|4|
+|Piano Semint.|108x100|4|
 
 Riferimenti
 ------
