@@ -298,7 +298,7 @@ upFloor=STRUCT([basementCeiling,upFloor])
 """
 scalinata esterna 1
 """
-sx = (U[10][0]-U[7][0])/8;sy=U[7][1]-U[1][1];sz=1.44/8
+sx = (U[10][0]-U[7][0])/8; sy=U[7][1]-U[1][1]; sz=1.44/8
 steps = createSteps(8,[sx,sy,sz])
 steps = T([1,2,3])([U[1][0],U[1][1],5.65-2*sz])(steps)
 lastStep = STRUCT(MKPOLS((U,[FU[3]])))
@@ -308,27 +308,25 @@ ramps = (U,[FU[0],FU[1]])
 tri = SIMPLEX(2)
 sx1 = U[10][0]-U[7][0]
 sy1 = U[8][1]-U[7][1]
-ramps1 = T(2)(1)(R([2,3])(PI/2)(PROD([tri,INTERVALS(1)(1)])))
-ramps1 = S([1,2,3])([sx1,sy1,1.44])(ramps1)
-ramps1 = T([1,2,3])([U[7][0],U[7][1],4.21])(ramps1) ##4mt le mura, 0.15 il tetto, 0.6 l ultimo step = 4.21
+ramp1 = T(2)(1)(R([2,3])(PI/2)(PROD([tri,INTERVALS(1)(1)])))
+ramp1 = S([1,2,3])([sx1,sy1,1.44])(ramp1)
+ramp1 = T([1,2,3])([U[7][0],U[7][1],4.21])(ramp1) ##4mt le mura, 0.15 il tetto, 0.6 l ultimo step = 4.21
 sy2 = U[1][1]-U[0][1]
-ramps2 = T(2)(1)(R([2,3])(PI/2)(PROD([tri,INTERVALS(1)(1)])))
-ramps2 = S([1,2,3])([sx1,sy2,1.44])(ramps2)
-ramps2 = T([1,2,3])([U[0][0],U[0][1],4.21])(ramps2)
+ramp2 = T(2)(1)(R([2,3])(PI/2)(PROD([tri,INTERVALS(1)(1)])))
+ramp2 = S([1,2,3])([sx1,sy2,1.44])(ramp2)
+ramp2 = T([1,2,3])([U[0][0],U[0][1],4.21])(ramp2)
 
-staircase1 = STRUCT([lastStep,steps,ramps1,ramps2])
+staircase1 = STRUCT([lastStep,steps,ramp1,ramp2])
 
 #VIEW(STRUCT([basementFloors,frameAndWindows,basementWalls,bigColumns,smallColumns, staircase1,upFloor]))
 
 """ Costruzione scale interne """
 sy=(U[20][0]-U[18][0])/2; sz=5.55/32
-flight1origin = createSteps(15,[.27,sy-.1,sz])
+flight1origin = createSteps(15,[.27,sy-.1,sz],True)
 
-tanBeta = (sz*15)/(.27*15)
-tensor = MAT([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,-tanBeta,0,1]])
-underStair = tensor(CUBOID([.27*15,sy,sz]))
 sideStair = STRUCT(NN(2)([tensor(CUBOID([.27*15,.05,sz*2])),T(2)(sy-.05)]))
-flight1origin = R([1,2])(PI/2)(STRUCT([T(2)(.05)(flight1origin),underStair,sideStair]))
+flight1origin = R([1,2])(PI/2)(STRUCT([T(2)(.05)(flight1origin),sideStair]))
+
 flight2origin = R([1,2])(-PI)(flight1origin)
 
 flight1 = T([1,2,3])([U[18][0]+sy,U[18][1],(5.65-sz*2)])(flight1origin)
@@ -339,6 +337,10 @@ largeStep1 = T([1,2,3])([U[19][0],U[19][1]-sx,(.1+sz*15)-sz])(CUBOID([(U[20][0]-
 flight3 = T([1,2,3])([U[14][0],U[14][1],(5.65-sz*2)])(flight2origin)
 flight4 = T([1,2,3])([U[15][0],U[15][1]-.27*15,(.1+sz*14)])(flight1origin)
 largeStep = T(2)(U[16][1]-U[19][1]+sx)(largeStep1)
+
+stair1 = STRUCT([largeStep1,flight1,flight2])
+stair2 = STRUCT([flight3,flight4,largeStep])
+#VIEW(STRUCT([stair1,stair2]))
 
 """ Ringhiera """
 paletto = CUBOID([.04,.04,1])
@@ -379,9 +381,6 @@ handrailC = T([1,2,3])([U[18][0]+(2*dx2+.04),U[18][1]+(.27*15)+.04,(.1+sz*16)])(
 
 handrail1 = STRUCT([handrailA,handrailB,handrailC,railing1])
 handrail2 = T(2)(U[14][1])(S(2)(-1)(T(2)(-U[18][1])(handrail1)))
-
-stair1 = STRUCT([largeStep1,flight1,flight2])
-stair2 = STRUCT([flight3,flight4,largeStep])
 
 """ Costruzione seconda parte del podio """
 lines = lines2lines("podio.lines")
