@@ -274,7 +274,7 @@ vetrata_semint = R([2,3])(PI/2)(STRUCT([COLOR(GRAY)(telaio_semint)]))
 vetrata_semint = T([1,2])([20.4,94.1328])(R([1,2])(-PI/2)(vetrata_semint))
 
 lowerLevel = STRUCT([basementFloors,vetrata_semint,basementWalls,bigColumns,smallColumns,stairs1,stairs2])
-#VIEW(STRUCT([basementFloors,vetrata_semint,basementWalls,bigColumns,smallColumns]))
+#VIEW(lowerLevel)
 
 """ Costruzione pavimento podio/tetto seminterrato """
 lines = lines2lines("tetto-semint.lines")
