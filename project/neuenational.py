@@ -28,12 +28,12 @@ V,EV = larCuboidsFacets([V,FV])
 trasl = 2*3.577 +.25 + .107 
 V = (mat(V)*.810).tolist()
 V = (mat(V) + [trasl,trasl]).tolist()
-##VIEW(STRUCT(MKPOLS((V,EV))))
+#VIEW(STRUCT(MKPOLS((V,EV))))
 smallGrid = T(3)(8.75)(STRUCT(MKPOLS((V,EV))))
 smallGrid = OFFSET([.05,.05,.05])(smallGrid)
 grid = STRUCT(NN(14)([smallGrid,T(1)((8*.416)+.25)]))
 grid = STRUCT(NN(14)([grid,T(2)((8*.416)+.25)]))
-##VIEW(grid)
+#VIEW(grid)
 
 roof = STRUCT([beams,cover,grid])
 
@@ -44,7 +44,7 @@ lines_pt = lines2lines(filename)
 V,EV = lines2lar(lines_pt) ##creo Vertici e Spigoli del piano terra
 VV = AA(LIST)(range(len(V)))
 submodel = STRUCT(MKPOLS((V,EV)))
-##VIEW(larModelNumbering(1,1,1)(V,[VV,EV],submodel,0.07))
+#VIEW(larModelNumbering(1,1,1)(V,[VV,EV],submodel,0.07))
 
 """ trasform1azione di scala """
 assert EV[32] == (30,69) ##spigolo di un muro del pianoterra. 30 e 69 sono i vertici
@@ -78,7 +78,6 @@ pillars = COLOR(BLACK)(OFFSET([.05,.05])(pillarsHPCs))
 ducts = COLOR(GREEN)(OFFSET([.5,.5])(ductsHPCs))
 panels = COLOR(YELLOW)(OFFSET([.25,.25])(panelsHPCs))
 #walls = COLOR(CYAN)(OFFSET([.02,.02])(wallsHPCs))
-##VIEW(STRUCT([ stairs,panels,walls,ducts,pillars ]))
 
 """Estrusione delle mura piano terra"""
 pillarsE = PROD([ pillars, INTERVALS(8.35)(1) ])
@@ -86,7 +85,7 @@ pillarsE = PROD([ pillars, INTERVALS(8.35)(1) ])
 ductsE = PROD([ ducts, INTERVALS(8.4)(1) ])
 panelsE = PROD([ panels, INTERVALS(4.4)(1) ]) ###mettere altezza reale pannelli
 #wallsE = PROD([ walls, INTERVALS(8.4)(1) ])
-#VIEW(STRUCT([pillarsE,panelsE, wallsE, ductsE, stairsE]))
+#VIEW(STRUCT([pillarsE,panelsE, ductsE]))
 
 """ Costruzione parte finale pilastri su cui poggia il tetto"""
 C,FC = larCuboids([3,1])
@@ -114,14 +113,14 @@ pillarsE = STRUCT([tops, pillarsE])
 lines = lines2lines("telaiopt.lines")
 Z,FZ,EZ,poly = larFromLines(lines)
 HH = AA(LIST)(range(len(Z)))
-##VIEW(larModelNumbering(1,1,1)(Z,[HH,EZ,FZ],STRUCT(MKPOLS([Z,EZ])),0.1)) 
+#VIEW(larModelNumbering(1,1,1)(Z,[HH,EZ,FZ],STRUCT(MKPOLS([Z,EZ])),0.1)) 
 Z = (mat(Z)-Z[60]).tolist()
 sx = 50.15/Z[53][0]; sy = 8.4/Z[53][1]
 scaling = mat([[sx,0,0],[0,sy,0]])
 Z = ( mat(Z)*scaling ).tolist()
 
 #vetriHPC = STRUCT(MKPOLS((Z,FZ)))
-##VIEW(EXPLODE(1.2,1.2,1.2)(MKPOLS([Z,FZ])))
+#VIEW(EXPLODE(1.2,1.2,1.2)(MKPOLS([Z,FZ])))
 #vetri1 = T(3)(0.075)(OFFSET([0.0,0.0,0.03])(vetriHPC))
 telaioHPC = STRUCT(MKPOLS([Z,EZ]))
 telaioN = STRUCT([OFFSET([0.1,0.2,0.25])(telaioHPC)])
@@ -132,14 +131,14 @@ telaioO = R([1,2])(PI/2)(telaioN)
 lines = lines2lines("telaiopt2.lines")
 Z,FZ,EZ,poly = larFromLines(lines)
 HH = AA(LIST)(range(len(Z)))
-##VIEW(larModelNumbering(1,1,1)(Z,[HH,EZ,FZ],STRUCT(MKPOLS([Z,EZ])),0.1)) 
+#VIEW(larModelNumbering(1,1,1)(Z,[HH,EZ,FZ],STRUCT(MKPOLS([Z,EZ])),0.1)) 
 Z = (mat(Z)-Z[20]).tolist()
 sx = 50.15/Z[80][0]; sy = 8.4/Z[80][1]
 scaling = mat([[sx,0,0],[0,sy,0]])
 Z = ( mat(Z)*scaling ).tolist()
 
 #vetriHPC = STRUCT(MKPOLS((Z,FZ)))
-##VIEW(EXPLODE(1.2,1.2,1.2)(MKPOLS([Z,FZ])))
+#VIEW(EXPLODE(1.2,1.2,1.2)(MKPOLS([Z,FZ])))
 #vetri2 = T(3)(0.11)(OFFSET([0.0,0.0,0.03])(vetriHPC))
 doorsEdges = [43,69,35,12,67,4,109,40,102,28]
 doorsHPC = STRUCT(MKPOLS([Z,[EZ[i] for i in doorsEdges]]))
@@ -164,12 +163,12 @@ lines_ps = lines2lines(filename)
 V,EV = lines2lar(lines_ps) ##creo Vertici e Spigoli del piano terra
 VV = AA(LIST)(range(len(V)))
 submodel = STRUCT(MKPOLS((V,EV)))
-##VIEW(larModelNumbering(1,1,1)(V,[VV,EV],submodel,0.04))
+#VIEW(larModelNumbering(1,1,1)(V,[VV,EV],submodel,0.04))
 
 """ Traslazione nell'origine e scalamento """
 V = ((mat(V) - V[299])*108).tolist()
 submodel = STRUCT(MKPOLS((V,EV)))
-##VIEW(larModelNumbering(1,1,1)(V,[VV,EV],submodel,5))
+#VIEW(larModelNumbering(1,1,1)(V,[VV,EV],submodel,5))
 
 """ Separazione tipi di muro """
 tallWallsEdges = [254,95,140,265,151,7,42,292,274,167,117,244,153,323,296,99,284,271,213,133,315,31]
@@ -204,7 +203,7 @@ lines_ps = lines2lines(filename)
 U,EU = lines2lar(lines_ps)
 UU = AA(LIST)(range(len(U)))
 submodel = STRUCT(MKPOLS((U,EU)))
-##VIEW(larModelNumbering(1,1,1)(U,[UU,EU],submodel,0.04))
+#VIEW(larModelNumbering(1,1,1)(U,[UU,EU],submodel,0.04))
 assert U[45][0] - U[57][0] == 0.1061
 U = ((mat(U) - U[57])*(8.7372/0.1061)).tolist()
 U = (mat(U) + [23.6088, 21.481199999999998]).tolist()
@@ -245,7 +244,7 @@ lines = lines2lines("pavimento-semint.lines")
 W,FW,EW,poly = larFromLines(lines)
 WW = AA(LIST)(range(len(W)))
 submodel = STRUCT(MKPOLS((W,EW)))
-##VIEW(larModelNumbering(1,1,1)(W,[WW,EW,FW],submodel,0.07))
+#VIEW(larModelNumbering(1,1,1)(W,[WW,EW,FW],submodel,0.07))
 W = ((mat(W) - W[1])*108).tolist()
 
 floors = (W,[FW[k] for k in range(len(FW)) if k!=5 and k!=4])
@@ -324,6 +323,8 @@ staircase1 = STRUCT([lastStep,steps,ramp1,ramp2])
 sy=(U[20][0]-U[18][0])/2; sz=5.55/32
 flight1origin = createSteps(15,[.27,sy-.1,sz],True)
 
+tanBeta = (sz*15)/(.27*15)
+tensor = MAT([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,-tanBeta,0,1]])
 sideStair = STRUCT(NN(2)([tensor(CUBOID([.27*15,.05,sz*2])),T(2)(sy-.05)]))
 flight1origin = R([1,2])(PI/2)(STRUCT([T(2)(.05)(flight1origin),sideStair]))
 
@@ -381,6 +382,9 @@ handrailC = T([1,2,3])([U[18][0]+(2*dx2+.04),U[18][1]+(.27*15)+.04,(.1+sz*16)])(
 
 handrail1 = STRUCT([handrailA,handrailB,handrailC,railing1])
 handrail2 = T(2)(U[14][1])(S(2)(-1)(T(2)(-U[18][1])(handrail1)))
+
+stair1 = STRUCT([largeStep1,flight1,flight2,handrail1])
+stair2 = STRUCT([flight3,flight4,largeStep,handrail2])
 
 """ Costruzione seconda parte del podio """
 lines = lines2lines("podio.lines")
