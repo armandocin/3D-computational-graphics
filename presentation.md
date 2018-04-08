@@ -4,20 +4,23 @@
 
 ## Index
 
-2D Draws Input
-Up Level Lines
-Basement Walls Lines
-Basement Floor Lines
-Podium Lines
-3D Modeling
-Extrusion Of 2D Lines
-PyPlasm modeling
-Roof
-Other Details
-Editing The 3D Model
-## 1. 2D Draws Input The first step to realize a 3D model of a building is to trace onto the plans of each level in order to produce the svg format of 2D lines drawings.
+- [2D Draws Input](#2D Draws Input)
+	* [Up Level Lines](#Up Level Lines)
+	* [Basement Walls Lines](#Basement Walls Lines)
+	* [Basement Floor Lines](#Basement Floor Lines)
+	* [Podium Lines](#Podium Lines)
+- [3D Modeling](#3D Modeling)
+	* [Extrusion Of 2D Lines](#Extrusion Of 2D Lines)
+	* [PyPlasm Modeling](#PyPlasm Modeling)
+		+ [Roof](#Roof)
+		+ [Other Details](#Other Details)
+- [Editing The 3D Model](#Editing The 3D Model)
 
-### Up Level Lines <img src="/images/pt1.jpg" width="500">
+## 2D Draws Input
+The first step to realize a 3D model of a building is to trace onto the plans of each level in order to produce the svg format of 2D lines drawings.
+
+### Up Level Lines 
+<img src="/images/pt1.jpg" width="500">
 
 2D input can be numbered in order to select vertices, edges or faces
 <img src="/images/ptNumbering.jpg" width="500" vspace="10">
@@ -30,17 +33,21 @@ To verify the correct selection of edges, Complexes can be colored
 <img src="/images/telaio1.jpg">
 <img src="/images/telaio2.png" width="550">
 
-### Basement Walls Lines <img src="/images/ps.jpg" width="500">
+### Basement Walls Lines 
+<img src="/images/ps.jpg" width="500">
 
 <img src="/images/psNumbering.png" width="400"> <img src="/images/psc.png" width="400">
 
-### Basement Floor Lines The 2-cells that form the floor must be covex
+### Basement Floor Lines 
+The 2-cells that form the floor must be covex
 
 <img src="/images/basfloor.jpg" width="400"> <img src="/images/basfloorNumb.png" width="400">
 
-### Podium Lines <img src="/images/podio.jpg" width="400"> <img src="/images/podio.png" width="400">
+### Podium Lines 
+<img src="/images/podio.jpg" width="400"> <img src="/images/podio.png" width="400">
 
-## 3D Modeling A second step consists in the extrusion of 2D lines and geometric modeling of other elements of the building
+## 3D Modeling 
+A second step consists in the extrusion of 2D lines and geometric modeling of other elements of the building
 
 ### Extrusion Of 2D Lines
 <img src="/images/pte.png" width="400" alt="Up level Extrusion"> <img src="/images/pse.png" width="400" alt="Basement walls extrusion"> <img src="/images/basfloore.png" width="400" alt="Basement floor extrusion"> <img src="/images/podioe.png" width="400" alt="podium structure extrusion">
@@ -49,7 +56,8 @@ To verify the correct selection of edges, Complexes can be colored
 
 Plasm is a 'design language' for geometric and solid parametric design, developed by the CAD Group at the Universities 'La Sapienza' and 'Roma Tre' in Italy.
 
-#### Roof <img src="/images/travicomp.png">
+#### Roof 
+<img src="/images/travicomp.png">
 
 <img src="/images/roof1.png" width="400"> <img src="/images/grid.png" width="400"> <img src="/images/roof2.png" width="400" align="middle">
 
@@ -57,7 +65,8 @@ Plasm is a 'design language' for geometric and solid parametric design, develope
 
 <img src="/images/pilastro.png" width="300"> <img src="/images/scala1.png" width="300"> <img src="/images/scala2.png" width="300"> <img src="/images/scala3.png" width="300">
 
-## Editing The 3D Model Eventually the 3D model can be edited, choosing textures and forniture
+## Editing The 3D Model
+Eventually the 3D model can be edited, choosing textures and forniture
 
 Front entry
 <img src="/images/front.png" vspace="10"> <img src="/images/frontdoors.png" vspace="10">
