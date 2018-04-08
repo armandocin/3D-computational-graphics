@@ -39,7 +39,7 @@ roof = STRUCT([beams,cover,grid])
 
 """ Mura Pianoterra """
 
-filename = "pianoterra.lines"
+filename = "lines/pianoterra.lines"
 lines_pt = lines2lines(filename)
 V,EV = lines2lar(lines_pt) ##creo Vertici e Spigoli del piano terra
 VV = AA(LIST)(range(len(V)))
@@ -61,7 +61,7 @@ wallsEdges = [32,61,106,45]
 #pt = (V,[EV[k] for k in panelsEdges+ductsEdges+stairsEdges+wallsEdges])
 
 """ pilastri """
-lines = lines2lines("pilastri.lines")
+lines = lines2lines("lines/pilastri.lines")
 P,EP = lines2lar(lines)
 #VIEW(larModelNumbering(1,1,1)(P,[AA(LIST)(range(len(P))),EP],STRUCT(MKPOLS((P,EP))),0.01))
 P = ((mat(P) - [P[56][0],P[57][1]])*(50.3/(0.8828-0.1155))).tolist()
@@ -110,7 +110,7 @@ tops = T(3)(8.35)(tops)
 pillarsE = STRUCT([tops, pillarsE])
 
 """ Costruzione del telaio """
-lines = lines2lines("telaiopt.lines")
+lines = lines2lines("lines/telaiopt.lines")
 Z,FZ,EZ,poly = larFromLines(lines)
 HH = AA(LIST)(range(len(Z)))
 #VIEW(larModelNumbering(1,1,1)(Z,[HH,EZ,FZ],STRUCT(MKPOLS([Z,EZ])),0.1)) 
@@ -128,7 +128,7 @@ telaioN = R([2,3])(PI/2)(telaioN) ##mi sposto su x,z in modo da "estrudere" su y
 telaioS = T([1,2])([0.25,50.25])(telaioN)
 telaioO = R([1,2])(PI/2)(telaioN)
 
-lines = lines2lines("telaiopt2.lines")
+lines = lines2lines("lines/telaiopt2.lines")
 Z,FZ,EZ,poly = larFromLines(lines)
 HH = AA(LIST)(range(len(Z)))
 #VIEW(larModelNumbering(1,1,1)(Z,[HH,EZ,FZ],STRUCT(MKPOLS([Z,EZ])),0.1)) 
@@ -158,7 +158,7 @@ upLevel = T([1,2,3])([43.5,21.7,5.5])(STRUCT([pillarsE, panelsE, telaio, ductsE,
 #VIEW(upLevel)
 
 """ Creazione mura seminterrato """
-filename = "mura-semint.lines"
+filename = "lines/mura-semint.lines"
 lines_ps = lines2lines(filename)
 V,EV = lines2lar(lines_ps) ##creo Vertici e Spigoli del piano terra
 VV = AA(LIST)(range(len(V)))
@@ -198,7 +198,7 @@ thickWalls = PROD([ thickWalls, INTERVALS(4)(1) ])
 gardenWalls = PROD([ gardenWalls, INTERVALS(5.65)(1) ])
 
 """ Creazioni pannelli seminterrato """
-filename = "pannelli-semint.lines"
+filename = "lines/pannelli-semint.lines"
 lines_ps = lines2lines(filename)
 U,EU = lines2lar(lines_ps)
 UU = AA(LIST)(range(len(U)))
@@ -240,7 +240,7 @@ stairs1 = T([1,2,3])(V[95]+[-2*sz])(stairsOrigin)
 stairs2 = T([1,2,3])(V[231]+[-2*sz])(stairsOrigin)
 
 """ Pavimento del Seminterrato """
-lines = lines2lines("pavimento-semint.lines")
+lines = lines2lines("lines/pavimento-semint.lines")
 W,FW,EW,poly = larFromLines(lines)
 WW = AA(LIST)(range(len(W)))
 submodel = STRUCT(MKPOLS((W,EW)))
@@ -258,7 +258,7 @@ basementFloors = STRUCT([regular_floors,lower_floors])
 basementWalls = STRUCT([basementWalls,walls_behind_stairs])
 
 """ Costruzione telaio e vetrata seminterrato """
-lines = lines2lines("telaio-semint.lines")
+lines = lines2lines("lines/telaio-semint.lines")
 P,FP,EP,polygons = larFromLines(lines)
 #VIEW(larModelNumbering(1,1,1)(P,[AA(LIST)(range(len(P))),EP,FP],STRUCT(MKPOLS((P,EP))),0.1))
 P = (mat(P)-P[71]).tolist()
@@ -276,7 +276,7 @@ lowerLevel = STRUCT([basementFloors,vetrata_semint,basementWalls,bigColumns,smal
 #VIEW(lowerLevel)
 
 """ Costruzione pavimento podio/tetto seminterrato """
-lines = lines2lines("tetto-semint.lines")
+lines = lines2lines("lines/tetto-semint.lines")
 U,FU,EU,poly = larFromLines(lines)
 #VIEW(larModelNumbering(1,1,1)(U,[AA(LIST)(range(len(U))),EU,FU],STRUCT(MKPOLS((U,EU))),5))
 
@@ -387,7 +387,7 @@ stair1 = STRUCT([largeStep1,flight1,flight2,handrail1])
 stair2 = STRUCT([flight3,flight4,largeStep,handrail2])
 
 """ Costruzione seconda parte del podio """
-lines = lines2lines("podio.lines")
+lines = lines2lines("lines/podio.lines")
 P,FP,EP,polygons = larFromLines(lines)
 #VIEW(larModelNumbering(1,1,1)(P,[AA(LIST)(range(len(P))),EP,FP],STRUCT(MKPOLS((P,EP))),0.07))
 P = ((mat(P)-P[19])*(83.71803810292634/(P[19][1]-P[2][1]))).tolist()
