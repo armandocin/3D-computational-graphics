@@ -7,7 +7,7 @@ Neue Nationalgalerie
 -------------
 3D reproduction of the **Neue Nationalgalerie** of Berlin.    
      
-See the [presentation file](https://github.com/armandocin/3D-computational-graphics/blob/master/neuenational.md) for more details.
+See the [presentation file](https://github.com/armandocin/3D-computational-graphics/blob/master/presentation.md) for more details.
 
 Implementation Info
 ------------
