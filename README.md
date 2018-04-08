@@ -1,4 +1,4 @@
-Progetto di Grafica Computazionale
+Computational Graphics Project
 ================
 *Project of "Computational Graphics" course at "Roma Tre" University*   
 a.y. 2015-2016
