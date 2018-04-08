@@ -4,17 +4,17 @@
 
 ## Index
 
-- [2D Draws Input](#2D Draws Input)
-	* [Up Level Lines](#Up Level Lines)
-	* [Basement Walls Lines](#Basement Walls Lines)
-	* [Basement Floor Lines](#Basement Floor Lines)
-	* [Podium Lines](#Podium Lines)
-- [3D Modeling](#3D Modeling)
-	* [Extrusion Of 2D Lines](#Extrusion Of 2D Lines)
-	* [PyPlasm Modeling](#PyPlasm Modeling)
-		+ [Roof](#Roof)
-		+ [Other Details](#Other Details)
-- [Editing The 3D Model](#Editing The 3D Model)
+- [2D Draws Input](#2d-draws-input)
+	* [Up Level Lines](#up-level-lines)
+	* [Basement Walls Lines](#basement-walls-lines)
+	* [Basement Floor Lines](#basement-floor-lines)
+	* [Podium Lines](#podium-lines)
+- [3D Modeling](#3d-modeling)
+	* [Extrusion Of 2D Lines](#extrusion-of-2d-lines)
+	* [PyPlasm Modeling](#pyplasm-modeling)
+		+ [Roof](#roof)
+		+ [Other Details](#other-details)
+- [Editing The 3D Model](#editing-the-3d-model)
 
 ## 2D Draws Input
 The first step to realize a 3D model of a building is to trace onto the plans of each level in order to produce the svg format of 2D lines drawings.
